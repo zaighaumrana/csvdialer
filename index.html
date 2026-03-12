@@ -1,92 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialer - Connection Fixed</title>
+    <title>Dialer Fix</title>
     <style>
-        body { background: #0d0f0e; color: #e8ede9; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #151817; padding: 30px; border-radius: 12px; border: 1px solid #2a2e2c; width: 400px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 20px 0; background: #1c1f1e; border: 1px solid #353a38; color: white; border-radius: 6px; box-sizing: border-box; }
-        button { background: #00e87a; color: #000; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-        .hidden { display: none; }
-        #status { margin-top: 15px; font-size: 14px; color: #8a9490; }
+        body { background: #0d0f0e; color: white; font-family: sans-serif; padding: 50px; text-align: center; }
+        input { width: 300px; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #222; color: white; }
+        button { padding: 10px 20px; background: #00e87a; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #log { margin-top: 20px; color: #888; font-family: monospace; }
     </style>
 </head>
 <body>
-
-<div id="setup" class="card">
     <h2>Connect Dialer</h2>
-    <input type="text" id="script-url" placeholder="Paste Deployment URL here...">
-    <button id="connect-btn" onclick="connect()">Connect & Fetch Leads</button>
-    <div id="status"></div>
-</div>
+    <input type="text" id="url" placeholder="Paste New Deployment URL">
+    <button onclick="tryConnect()">Connect</button>
+    <div id="log"></div>
 
-<div id="app" class="card hidden">
-    <h2 id="company-name">Ready</h2>
-    <p id="phone-number"></p>
-    <button onclick="nextLead()">Next Lead</button>
-</div>
-
-<script>
-    let leads = [];
-    let currentIndex = 0;
-
-    async function connect() {
-        const url = document.getElementById('script-url').value.trim();
-        const status = document.getElementById('status');
-        const btn = document.getElementById('connect-btn');
-
-        if (!url) return alert("Please paste the URL");
-        
-        status.textContent = "Connecting to Google...";
-        btn.disabled = true;
-
-        try {
-            // THE FIX: We use 'no-cors' style parameters by appending to the URL 
-            // and avoiding complex headers that trigger browser blocks.
-            const target = `${url}?action=getSheetData`;
-            
-            const response = await fetch(target, {
-                method: 'GET',
-                mode: 'cors', // Crucial for Google Apps Script
-                redirect: 'follow' // Crucial: Google redirects to a different server to serve data
-            });
-
-            const data = await response.json();
-
-            if (data.ok) {
-                leads = data.data;
-                document.getElementById('setup').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                render();
+    <script>
+        // This function handles the data when it arrives from Google
+        window.callback = function(response) {
+            console.log("Data received:", response);
+            if (response.ok) {
+                document.getElementById('log').innerHTML = "<span style='color:#00e87a'>SUCCESS!</span> Received " + response.data.length + " leads.";
+                // Here you would trigger your main UI
             } else {
-                status.textContent = "Script Error: " + data.error;
-                btn.disabled = false;
+                document.getElementById('log').textContent = "Error: " + response.error;
             }
-        } catch (err) {
-            console.error(err);
-            status.innerHTML = `<span style="color:#ff4d4d">Connection Blocked.</span><br><br>
-            1. Ensure the URL is a <b>New Deployment</b>.<br>
-            2. Check that you are signed into Google.<br>
-            3. Disable any "Privacy Shields" or AdBlockers.`;
-            btn.disabled = false;
-        }
-    }
+        };
 
-    function render() {
-        if (leads.length > 0) {
-            document.getElementById('company-name').textContent = leads[currentIndex].company || "No Name";
-            document.getElementById('phone-number').textContent = leads[currentIndex].phone || "No Phone";
-        }
-    }
+        function tryConnect() {
+            const baseUrl = document.getElementById('url').value.trim();
+            const log = document.getElementById('log');
+            
+            if (!baseUrl) return alert("Paste URL");
+            log.textContent = "Requesting data...";
 
-    function nextLead() {
-        if (currentIndex < leads.length - 1) {
-            currentIndex++;
-            render();
+            // Instead of fetch(), we create a <script> tag. 
+            // This is the only way to bypass 100% of CORS/Cookie blocks.
+            const script = document.createElement('script');
+            script.src = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 'action=getSheetData';
+            
+            script.onerror = () => {
+                log.innerHTML = "<span style='color:red'>Connection Failed.</span><br>Possible cause: The URL is incorrect or the script isn't shared.";
+            };
+
+            document.body.appendChild(script);
         }
-    }
-</script>
+    </script>
 </body>
 </html>
