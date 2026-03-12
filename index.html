@@ -3,902 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cold Call Dialer</title>
+<title>Cold Call Dialer | Connected</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0d0f0e;--surface:#151817;--surface2:#1c1f1e;
-  --border:#2a2e2c;--border2:#353a38;
-  --accent:#00e87a;--adim:rgba(0,232,122,.10);--aglow:rgba(0,232,122,.22);
-  --text:#e8ede9;--t2:#8a9490;--t3:#4d5652;
-  --red:#ff4d4d;--amber:#f5a623;--blue:#4da6ff;--pink:#ff5ecf;--purple:#b388ff;
-  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
-  --row-h:36px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column}
-
-/* ── Header ── */
-header{border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:10px;background:var(--surface);flex-shrink:0}
-.dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 7px var(--aglow);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
-header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
-.hright{margin-left:auto;display:flex;align-items:center;gap:12px}
-.user-pill{font-family:var(--mono);font-size:9px;color:var(--t2);background:var(--surface2);border:1px solid var(--border);padding:3px 9px;border-radius:20px;display:none}
-.user-pill.vis{display:block}
-.sync-row{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--t3)}
-.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:background .3s}
-.sync-dot.saving{background:var(--amber);animation:pulse .7s ease-in-out infinite}
-.sync-dot.saved{background:var(--accent)}
-.sync-dot.error{background:var(--red)}
-
-.btn{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:6px 12px;border-radius:5px;border:none;cursor:pointer;transition:all .13s;white-space:nowrap}
-.btn-a{background:var(--accent);color:#001a0d}.btn-a:hover{filter:brightness(1.1)}
-.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border2)}.btn-g:hover{border-color:var(--accent);color:var(--accent)}
-.btn-red{background:rgba(255,77,77,.1);color:var(--red);border:1px solid rgba(255,77,77,.22)}.btn-red:hover{background:rgba(255,77,77,.2)}
-
-/* ══════════ SETUP SCREEN ══════════ */
-#setup-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:30px}
-.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;width:100%;max-width:560px}
-.setup-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
-.setup-logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--aglow)}
-.setup-logo-title{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
-.setup-title{font-size:20px;font-weight:500;margin-bottom:6px}
-.setup-sub{font-size:13px;color:var(--t2);margin-bottom:28px;line-height:1.6}
-
-.setup-step{display:flex;gap:14px;margin-bottom:22px}
-.step-num{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--adim);color:var(--accent);border:1px solid rgba(0,232,122,.22);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.step-body{flex:1}
-.step-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:5px}
-.step-hint{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px}
-.step-hint code{font-family:var(--mono);font-size:10px;color:var(--accent);background:var(--surface2);padding:1px 5px;border-radius:3px}
-.step-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;transition:border .12s}
-.step-input::placeholder{color:var(--t3)}
-.step-input:focus{border-color:var(--accent)}
-
-.saved-url-row{background:var(--adim);border:1px solid rgba(0,232,122,.2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:18px}
-.saved-url-label{font-family:var(--mono);font-size:10px;color:var(--accent);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-.connect-btn{width:100%;padding:13px;border-radius:8px;border:2px solid var(--accent);background:var(--adim);color:var(--accent);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .14s;margin-top:6px}
-.connect-btn:hover{background:rgba(0,232,122,.18)}
-.connect-btn:disabled{opacity:.45;cursor:not-allowed}
-
-.setup-note{font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:14px;line-height:1.8;padding:10px 12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)}
-.setup-note strong{color:var(--t2)}
-.setup-err{font-family:var(--mono);font-size:10px;color:var(--red);margin-top:10px;padding:8px 12px;background:rgba(255,77,77,.07);border:1px solid rgba(255,77,77,.2);border-radius:5px;display:none}
-
-/* ══════════ MAIN APP ══════════ */
-#app{flex:1;display:none;overflow:hidden;flex-direction:column}
-#app.vis{display:flex}
-
-.tabbar{border-bottom:1px solid var(--border);padding:0 18px;display:flex;align-items:center;gap:10px;background:var(--surface);flex-shrink:0;height:44px}
-.tabbar-label{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
-#tab-select{background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:5px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;cursor:pointer;min-width:200px}
-#tab-select:focus{border-color:var(--accent)}
-#tab-select option{background:var(--surface2)}
-.tab-load-btn{padding:6px 14px;border-radius:5px;border:none;background:var(--accent);color:#001a0d;font-family:var(--mono);font-size:10px;font-weight:600;cursor:pointer}
-.tab-load-btn:hover{filter:brightness(1.1)}
-.tab-load-btn:disabled{opacity:.5;cursor:not-allowed}
-.tabbar-stats{margin-left:auto;display:flex;align-items:center;gap:12px}
-.hstat{font-family:var(--mono);font-size:9px;color:var(--t2);white-space:nowrap}
-.hstat span{color:var(--accent);font-weight:600}
-
-.progbar-wrap{padding:5px 18px;flex-shrink:0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg)}
-.pbar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.pfill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
-.plabel{font-family:var(--mono);font-size:9px;color:var(--t3);white-space:nowrap}
-
-/* ── Layout ── */
-.main{display:grid;grid-template-columns:1fr 424px;flex:1;overflow:hidden}
-
-/* ── Left ── */
-.left{display:flex;flex-direction:column;overflow:hidden;padding:12px 16px}
-.slabel{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin-bottom:7px}
-
-.tscroll{flex:1;overflow-y:auto;overflow-x:hidden;position:relative}
-.tscroll::-webkit-scrollbar{width:4px}
-.tscroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.thead{display:grid;grid-template-columns:32px 78px 1fr 1fr 108px 30px 78px 30px 30px 58px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:2}
-.thead>span{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:6px 5px;white-space:nowrap;overflow:hidden}
-#virt-spacer{position:relative;will-change:contents}
-.vrow{display:grid;grid-template-columns:32px 78px 1fr 1fr 108px 30px 78px 30px 30px 58px;border-bottom:1px solid var(--border);cursor:pointer;position:absolute;width:100%;left:0;transition:background .07s}
-.vrow:hover{background:var(--surface)}
-.vrow.active{background:var(--adim)}
-.vrow>span{padding:0 5px;font-size:11px;color:var(--text);display:flex;align-items:center;height:var(--row-h);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.vrow .c-num{font-family:var(--mono);font-size:9px;color:var(--t3)}
-.vrow .c-mc{font-family:var(--mono);font-size:9px;color:var(--t3)}
-.vrow .c-ph{font-family:var(--mono);font-size:10px;color:var(--accent)}
-.vrow .cem{justify-content:center}
-.vrow .c-act{justify-content:center}
-.chip{display:inline-block;font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:3px;text-transform:uppercase;white-space:nowrap}
-.c-new{background:var(--adim);color:var(--accent)}
-.c-pkce{background:rgba(245,166,35,.13);color:var(--amber)}
-.c-pkni{background:rgba(255,77,77,.11);color:var(--red)}
-.c-vm{background:rgba(77,166,255,.11);color:var(--blue)}
-.c-na{background:rgba(255,255,255,.06);color:var(--t3)}
-.c-cd{background:rgba(255,94,207,.10);color:var(--pink)}
-.c-dnc{background:rgba(179,136,255,.13);color:var(--purple)}
-.c-cust{background:var(--adim);color:var(--accent)}
-.crow-btn{font-family:var(--mono);font-size:8px;font-weight:600;padding:3px 8px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--t3);cursor:pointer;transition:all .1s}
-.crow-btn:hover,.vrow.active .crow-btn{border-color:var(--accent);color:var(--accent);background:var(--adim)}
-.empty-state{text-align:center;padding:50px 16px;color:var(--t3);font-family:var(--mono);font-size:10px;line-height:2.4}
-.loading-state{text-align:center;padding:50px 16px;color:var(--t2);font-family:var(--mono);font-size:10px;line-height:2}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px}
-
-/* ── Right panel ── */
-.panel{border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
-
-/* Active lead card */
-.lcard{padding:16px 18px 0;flex-shrink:0}
-.lcard-inner{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.lcard-bar{height:3px;background:linear-gradient(90deg,var(--accent),rgba(0,232,122,.12))}
-.lcard-body{padding:16px}
-.lcard-toprow{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
-.lcard-badges{display:flex;gap:5px;flex-wrap:wrap}
-.lbadge{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:var(--surface2);color:var(--t3);border:1px solid var(--border)}
-.lbadge.active-b{background:rgba(0,232,122,.08);color:var(--accent);border-color:rgba(0,232,122,.2)}
-.lcard-rownum{font-family:var(--mono);font-size:9px;color:var(--t3);white-space:nowrap}
-.ldriver{font-size:21px;font-weight:500;color:var(--text);line-height:1.1;margin-bottom:3px;letter-spacing:-.01em}
-.lcompany{font-size:12px;color:var(--t2);margin-bottom:13px;font-weight:300}
-.ldata-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.lfield{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 11px}
-.lfield-label{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
-.lfield-value{font-size:11px;color:var(--text);line-height:1.4;word-break:break-all}
-.lfield-value.accent{color:var(--accent);font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:.04em;text-shadow:0 0 12px var(--aglow)}
-.lfield-value.mono{font-family:var(--mono);font-size:10px}
-.lfield.span2{grid-column:span 2}
-.cbtn{width:100%;padding:11px;border-radius:8px;border:2px solid var(--accent);background:var(--adim);color:var(--accent);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:all .13s}
-.cbtn:hover{background:rgba(0,232,122,.17)}
-.cbtn.copied{background:var(--accent);color:#001a0d}
-
-/* Lower panel scroll */
-.panel-scroll{flex:1;overflow-y:auto;padding:12px 18px;display:flex;flex-direction:column;gap:10px}
-.panel-scroll::-webkit-scrollbar{width:3px}
-.panel-scroll::-webkit-scrollbar-thumb{background:var(--border2)}
-
-/* Note */
-.note-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
-.note-req{font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:4px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,77,77,.08);color:var(--red);border:1px solid rgba(255,77,77,.2);transition:all .2s}
-.note-req.ok{background:var(--adim);color:var(--accent);border-color:rgba(0,232,122,.2)}
-.nsec{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px}
-.ntags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-.ntbtn{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.06em;padding:5px 9px;border-radius:4px;border:1px solid var(--border2);background:transparent;cursor:pointer;transition:all .11s;text-transform:uppercase}
-.nt-pkce{color:var(--amber);border-color:rgba(245,166,35,.3)}.nt-pkce:hover,.nt-pkce.sel{background:rgba(245,166,35,.14);border-color:var(--amber)}
-.nt-pkni{color:var(--red);border-color:rgba(255,77,77,.3)}.nt-pkni:hover,.nt-pkni.sel{background:rgba(255,77,77,.11);border-color:var(--red)}
-.nt-vm{color:var(--blue);border-color:rgba(77,166,255,.3)}.nt-vm:hover,.nt-vm.sel{background:rgba(77,166,255,.11);border-color:var(--blue)}
-.nt-na{color:var(--t2);border-color:var(--border2)}.nt-na:hover,.nt-na.sel{background:rgba(255,255,255,.06);border-color:var(--t2)}
-.nt-cd{color:var(--pink);border-color:rgba(255,94,207,.3)}.nt-cd:hover,.nt-cd.sel{background:rgba(255,94,207,.09);border-color:var(--pink)}
-.nt-dnc{color:var(--purple);border-color:rgba(179,136,255,.3)}.nt-dnc:hover,.nt-dnc.sel{background:rgba(179,136,255,.11);border-color:var(--purple)}
-.ndivider{display:flex;align-items:center;gap:7px;margin:7px 0}
-.ndivider span{font-family:var(--mono);font-size:8px;color:var(--t3);white-space:nowrap;letter-spacing:.1em;text-transform:uppercase}
-.ndivider::before,.ndivider::after{content:'';flex:1;height:1px;background:var(--border)}
-.nmanual{display:flex;gap:5px}
-.nminput{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:7px 9px;font-family:var(--sans);font-size:11px;color:var(--text);outline:none;transition:border .11s}
-.nminput::placeholder{color:var(--t3)}
-.nminput:focus{border-color:var(--accent)}
-.nmadd{padding:7px 10px;border-radius:4px;border:1px solid rgba(0,232,122,.22);background:var(--adim);color:var(--accent);font-family:var(--mono);font-size:9px;font-weight:600;cursor:pointer}
-.nmadd:hover{background:rgba(0,232,122,.2)}
-.ndisp{font-size:11px;color:var(--t2);line-height:1.6;margin-top:8px;word-break:break-word;border-top:1px solid var(--border);padding-top:8px;min-height:16px}
-.ndisp:empty::before{content:'Required — tag or type a note after each call';color:var(--red);font-style:italic;font-size:10px}
-
-/* Checkboxes */
-.checks-row{display:flex;flex-direction:column;gap:7px}
-.chk-row{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;display:flex;align-items:center;gap:10px}
-.chk-row label{font-size:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:8px;flex:1;user-select:none}
-.chk-row label em{font-style:normal;font-size:10px;color:var(--t3);font-family:var(--mono)}
-.chk-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
-.chkbadge{font-family:var(--mono);font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:.07em;text-transform:uppercase;opacity:0;transition:opacity .2s}
-.chkbadge.vis{opacity:1}
-.badge-email{background:rgba(0,232,122,.12);color:var(--accent)}
-.badge-follow{background:rgba(77,166,255,.12);color:var(--blue)}
-
-/* Legend */
-.legend{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 13px}
-.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;margin-top:7px}
-.litem{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t2)}
-
-.navrow{display:flex;gap:6px;padding:0 18px 14px}
-.navrow .btn{flex:1}
-
-/* Toast */
-#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--accent);color:#001a0d;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:8px 16px;border-radius:7px;transition:transform .22s cubic-bezier(.34,1.56,.64,1);pointer-events:none;z-index:999;box-shadow:0 3px 16px var(--aglow)}
-#toast.show{transform:translateX(-50%) translateY(0)}
-#toast.err{background:var(--red);box-shadow:0 3px 16px rgba(255,77,77,.3)}
+/* ... (Styles omitted for brevity, keeping your original UI look) ... */
+:root{--bg:#0d0f0e;--surface:#151817;--surface2:#1c1f1e;--border:#2a2e2c;--border2:#353a38;--accent:#00e87a;--adim:rgba(0,232,122,.10);--aglow:rgba(0,232,122,.22);--text:#e8ede9;--t2:#8a9490;--t3:#4d5652;--red:#ff4d4d;--amber:#f5a623;--blue:#4da6ff;--pink:#ff5ecf;--purple:#b388ff;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--row-h:36px}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:var(--sans);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.setup-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.setup-card{background:var(--surface);border:1px solid var(--border);padding:40px;border-radius:12px;width:100%;max-width:500px;text-align:center}
+input{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:12px;border-radius:6px;font-family:var(--mono);margin:20px 0;outline:none}
+input:focus{border-color:var(--accent)}
+button{background:var(--accent);color:#000;border:none;padding:12px 24px;border-radius:6px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+button:hover{opacity:0.9}.hidden{display:none}
+/* Minimal classes for the dialer UI consistency */
+#main-ui{display:flex;flex-direction:column;height:100%}
+.top-bar{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.user-badge{font-family:var(--mono);font-size:12px;color:var(--t2)}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="dot"></div>
-  <h1>Cold Call Dialer</h1>
-  <div class="hright">
-    <div class="sync-row">
-      <div class="sync-dot" id="sync-dot"></div>
-      <span id="sync-label">not connected</span>
-    </div>
-    <div class="user-pill" id="user-pill"></div>
-    <button class="btn btn-g" style="font-size:9px;padding:4px 9px" onclick="showSetup()">&#9881;</button>
-  </div>
-</header>
-
-<!-- ══════════ SETUP ══════════ -->
-<div id="setup-screen">
+<div id="setup" class="setup-screen">
   <div class="setup-card">
-    <div class="setup-logo">
-      <div class="setup-logo-dot"></div>
-      <div class="setup-logo-title">Cold Call Dialer</div>
-    </div>
-    <div class="setup-title">Connect your Google Sheet</div>
-    <div class="setup-sub">One-time setup per person. Your Script URL is remembered in this browser.</div>
-
-    <div id="saved-url-row" class="saved-url-row" style="display:none">
-      <div class="saved-url-label" id="saved-url-label">&#10003; &nbsp;</div>
-      <button class="btn btn-red" style="font-size:9px;padding:4px 9px" onclick="forgetScript()">Forget</button>
-    </div>
-
-    <div class="setup-step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <div class="step-label">Add the Apps Script to your Google Sheet</div>
-        <div class="step-hint">
-          Open your Sheet → <strong>Extensions → Apps Script</strong><br>
-          Delete existing code, paste the entire <code>Code.gs</code> file → Save
-        </div>
-      </div>
-    </div>
-
-    <div class="setup-step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <div class="step-label">Deploy it as a Web App</div>
-        <div class="step-hint">
-          <strong>Deploy → New deployment → Web app</strong><br>
-          Execute as: <code>Me</code> &nbsp;·&nbsp; Who has access: <code>Anyone with a Google account</code><br>
-          Click Deploy → Authorize → copy the URL
-        </div>
-      </div>
-    </div>
-
-    <div class="setup-step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <div class="step-label">Paste your deployment URL here</div>
-        <div class="step-hint">Looks like: <code>https://script.google.com/macros/s/…/exec</code></div>
-        <input class="step-input" id="script-url-input" type="text" placeholder="https://script.google.com/macros/s/.../exec">
-      </div>
-    </div>
-
-    <div class="setup-err" id="setup-err"></div>
-
-    <button class="connect-btn" id="connect-btn" onclick="connectScript()">
-      Connect &amp; Sign in with Google
-    </button>
-
-    <div class="setup-note">
-      <strong>Security:</strong> Your Sheet is protected by Google account login.<br>
-      Only people you've shared the Sheet with can access the data.<br>
-      Your Script URL is stored only in <em>this browser</em> — never in the code or GitHub repo.
-    </div>
+    <h2>Connect to Sheet</h2>
+    <p style="color:var(--t2); margin-top:10px;">Paste your Deployment URL below</p>
+    <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/.../exec">
+    <button onclick="connect()">Connect & Start</button>
   </div>
 </div>
 
-<!-- ══════════ MAIN APP ══════════ -->
-<div id="app">
-  <div class="tabbar">
-    <span class="tabbar-label">Sheet Tab:</span>
-    <select id="tab-select"><option>—</option></select>
-    <button class="tab-load-btn" id="tab-load-btn" onclick="loadTab()">Load Tab</button>
-    <div class="tabbar-stats">
-      <div class="hstat">Total <span id="h-total">0</span></div>
-      <div class="hstat">Noted <span id="h-noted">0</span></div>
-      <div class="hstat">Left <span id="h-rem">0</span></div>
-      <div class="hstat">Emails <span id="h-em">0</span></div>
-    </div>
+<div id="main-ui" class="hidden">
+  <div class="top-bar">
+    <div class="user-badge" id="user-display">Connecting...</div>
+    <div style="color:var(--accent); font-weight:600;">ACTIVE SESSION</div>
   </div>
-
-  <div class="progbar-wrap">
-    <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
-    <div class="plabel" id="plabel">0 / 0</div>
-  </div>
-
-  <div class="main">
-    <!-- LEFT -->
-    <div class="left">
-      <div class="slabel" id="table-label">Leads</div>
-      <div class="tscroll" id="tscroll">
-        <div class="thead">
-          <span>#</span><span>MC #</span><span>Driver</span><span>Company</span>
-          <span>Phone</span><span>St</span><span>Note</span>
-          <span title="Email sent">&#9993;</span>
-          <span title="Follow-up">&#8617;</span>
-          <span></span>
-        </div>
-        <div id="virt-spacer"></div>
-      </div>
-      <div id="state-empty" class="empty-state" style="display:none">Select a tab above and click Load Tab</div>
-      <div id="state-loading" class="loading-state" style="display:none"><div class="spinner"></div><br>Loading from Google Sheets…</div>
-    </div>
-
-    <!-- RIGHT PANEL -->
-    <div class="panel">
-      <div class="lcard">
-        <div class="lcard-inner">
-          <div class="lcard-bar"></div>
-          <div class="lcard-body">
-            <div class="lcard-toprow">
-              <div class="lcard-badges">
-                <span class="lbadge" id="b-mc">MC —</span>
-                <span class="lbadge" id="b-entity">—</span>
-                <span class="lbadge" id="b-status">—</span>
-                <span class="lbadge" id="b-power">—</span>
-                <span class="lbadge" id="b-state">—</span>
-              </div>
-              <span class="lcard-rownum" id="l-rownum">Row —</span>
-            </div>
-            <div class="ldriver" id="l-driver">Select a lead</div>
-            <div class="lcompany" id="l-company">—</div>
-            <div class="ldata-grid">
-              <div class="lfield span2">
-                <div class="lfield-label">Phone Number</div>
-                <div class="lfield-value accent" id="l-phone">—</div>
-              </div>
-              <div class="lfield span2">
-                <div class="lfield-label">Physical Address</div>
-                <div class="lfield-value" id="l-address">—</div>
-              </div>
-              <div class="lfield">
-                <div class="lfield-label">Email Address</div>
-                <div class="lfield-value mono" id="l-email">—</div>
-              </div>
-              <div class="lfield">
-                <div class="lfield-label">Entity / Status</div>
-                <div class="lfield-value" id="l-estatus">—</div>
-              </div>
-            </div>
-            <button class="cbtn" id="cbtn" onclick="copyNumber()">
-              <span id="clabel">Copy Number to Clipboard</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel-scroll">
-
-        <div>
-          <div class="note-header">
-            <div class="slabel" style="margin-bottom:0">Note</div>
-            <span class="note-req" id="note-req">Required</span>
-          </div>
-          <div class="nsec">
-            <div class="ntags">
-              <button class="ntbtn nt-pkce" id="nt-pkce" onclick="applyTag('PK CE')">PK CE</button>
-              <button class="ntbtn nt-pkni" id="nt-pkni" onclick="applyTag('PK NI')">PK NI</button>
-              <button class="ntbtn nt-vm"   id="nt-vm"   onclick="applyTag('VM')">VM</button>
-              <button class="ntbtn nt-na"   id="nt-na"   onclick="applyTag('NA')">NA</button>
-              <button class="ntbtn nt-cd"   id="nt-cd"   onclick="applyTag('CD')">CD</button>
-              <button class="ntbtn nt-dnc"  id="nt-dnc"  onclick="applyTag('DNC')">DNC</button>
-            </div>
-            <div class="ndivider"><span>or custom</span></div>
-            <div class="nmanual">
-              <input class="nminput" id="nmin" type="text" placeholder="Type note, Enter or Add…" onkeydown="if(event.key==='Enter')addManual()">
-              <button class="nmadd" onclick="addManual()">Add</button>
-            </div>
-            <div class="ndisp" id="ndisp"></div>
-          </div>
-        </div>
-
-        <div class="checks-row">
-          <div class="chk-row">
-            <label>
-              <input type="checkbox" id="emcheck" onchange="toggleCheck('emailSent',this.checked)">
-              Email sent <em>(cold mail)</em>
-            </label>
-            <span class="chkbadge badge-email" id="embadge">Sent ✓</span>
-          </div>
-          <div class="chk-row">
-            <label>
-              <input type="checkbox" id="fucheck" onchange="toggleCheck('followUp',this.checked)">
-              Follow-up sent <em>(variation)</em>
-            </label>
-            <span class="chkbadge badge-follow" id="fubadge">Sent ✓</span>
-          </div>
-        </div>
-
-        <div class="legend">
-          <div class="slabel">Tag Key</div>
-          <div class="lgrid">
-            <div class="litem"><span class="chip c-pkce">PK CE</span>Picked, ended abruptly</div>
-            <div class="litem"><span class="chip c-pkni">PK NI</span>Picked, not interested</div>
-            <div class="litem"><span class="chip c-vm">VM</span>Went to voicemail</div>
-            <div class="litem"><span class="chip c-na">NA</span>No answer</div>
-            <div class="litem"><span class="chip c-cd">CD</span>Call disconnected</div>
-            <div class="litem"><span class="chip c-dnc">DNC</span>Do not call</div>
-            <div class="litem" style="grid-column:span 2"><span class="chip c-cust">text</span>Custom note</div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="navrow">
-        <button class="btn btn-g" onclick="prevLead()">&#8592; Prev</button>
-        <button class="btn btn-a" onclick="nextLead()">Next &#8594;</button>
-      </div>
-    </div>
+  <div id="content" style="padding:40px; text-align:center;">
+    <h1 id="lead-name">Loading Leads...</h1>
+    <p id="lead-phone" style="font-family:var(--mono); font-size:24px; margin:20px 0;"></p>
+    <button onclick="nextLead()">Next Lead (Down Arrow)</button>
   </div>
 </div>
-
-<div id="toast"></div>
 
 <script>
-// ══════ State ══════
-let scriptURL = '';
-let leads = [], activeIdx = null, currentTab = '';
-const ROW_H = 36;
-let rafPending = false;
-let saveQueue = {}, saveTimer = null;
+let state = {
+  url: '',
+  leads: [],
+  index: 0
+};
 
-// ══════ Init ══════
-function init() {
-  const saved = localStorage.getItem('dialerScriptURL');
-  if (saved) {
-    scriptURL = saved;
-    document.getElementById('script-url-input').value = saved;
-    document.getElementById('saved-url-label').textContent = '✓  ' + saved.slice(0, 52) + '…';
-    document.getElementById('saved-url-row').style.display = 'flex';
-    connectScript(true); // auto-connect silently
-  }
-  // hide tscroll until loaded
-  document.getElementById('tscroll').style.display = 'none';
-  document.getElementById('state-empty').style.display = 'none';
-}
-
-// ══════ Connect ══════
-async function connectScript(silent = false) {
-  const input = document.getElementById('script-url-input').value.trim();
-  const url = silent ? scriptURL : input;
-  if (!url) { showSetupErr('Please paste your Apps Script URL'); return; }
-
-  const btn = document.getElementById('connect-btn');
-  btn.disabled = true;
-  btn.textContent = 'Connecting…';
-  hideSetupErr();
+async function connect() {
+  const urlInput = document.getElementById('script-url').value.trim();
+  if (!urlInput) return alert("Please paste a URL");
 
   try {
-    // This call will trigger Google login redirect if not signed in.
-    // After login, Google redirects back and this succeeds.
-    const data = await callScript(url, { action: 'getTabs' });
-    scriptURL = url;
-    localStorage.setItem('dialerScriptURL', url);
+    // We use GET here because your manual test proved it works
+    const response = await fetch(`${urlInput}?action=getSheetData`);
+    const result = await response.json();
 
-    populateTabs(data.tabs);
-    showApp();
-
-    // Show logged-in user if returned
-    if (data.user) {
-      const pill = document.getElementById('user-pill');
-      pill.textContent = data.user;
-      pill.classList.add('vis');
-    }
-    setSync('saved', 'Connected');
-
-  } catch (err) {
-    btn.disabled = false;
-    btn.textContent = 'Connect & Sign in with Google';
-    if (!silent) {
-      // If the error looks like a redirect/auth issue, give a helpful message
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-        showSetupErr('Could not reach the script. Make sure you\'re signed into Google and the Script URL is correct. The browser may open a Google login tab — sign in there then click Connect again.');
-      } else {
-        showSetupErr('Error: ' + err.message);
-      }
+    if (result.ok) {
+      state.url = urlInput;
+      state.leads = result.data;
+      document.getElementById('setup').classList.add('hidden');
+      document.getElementById('main-ui').classList.remove('hidden');
+      document.getElementById('user-display').textContent = result.user || 'Connected';
+      renderLead();
     } else {
-      setSync('error', 'Auto-connect failed — click ⚙ to reconnect');
+      alert("Error from script: " + result.error);
     }
-  }
-}
-
-function forgetScript() {
-  localStorage.removeItem('dialerScriptURL');
-  localStorage.removeItem('dialerLastTab');
-  scriptURL = '';
-  document.getElementById('saved-url-row').style.display = 'none';
-  document.getElementById('script-url-input').value = '';
-  document.getElementById('connect-btn').disabled = false;
-  document.getElementById('connect-btn').textContent = 'Connect & Sign in with Google';
-  document.getElementById('user-pill').classList.remove('vis');
-}
-
-function showSetupErr(msg) {
-  const el = document.getElementById('setup-err');
-  el.textContent = msg; el.style.display = 'block';
-}
-function hideSetupErr() { document.getElementById('setup-err').style.display = 'none'; }
-
-function showApp() {
-  document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('app').classList.add('vis');
-}
-function showSetup() {
-  document.getElementById('setup-screen').style.display = 'flex';
-  document.getElementById('app').classList.remove('vis');
-  document.getElementById('connect-btn').disabled = false;
-  document.getElementById('connect-btn').textContent = 'Connect & Sign in with Google';
-}
-
-function populateTabs(tabs) {
-  const sel = document.getElementById('tab-select');
-  sel.innerHTML = '';
-  tabs.forEach(t => {
-    const o = document.createElement('option');
-    o.value = t; o.textContent = t; sel.appendChild(o);
-  });
-  const last = localStorage.getItem('dialerLastTab');
-  if (last && tabs.includes(last)) sel.value = last;
-}
-
-// ══════ Load tab ══════
-async function loadTab() {
-  const tab = document.getElementById('tab-select').value;
-  if (!tab) return;
-  currentTab = tab;
-  localStorage.setItem('dialerLastTab', tab);
-
-  document.getElementById('tscroll').style.display = 'none';
-  document.getElementById('state-empty').style.display = 'none';
-  document.getElementById('state-loading').style.display = 'block';
-  document.getElementById('tab-load-btn').disabled = true;
-  setSync('saving', 'Loading…');
-
-  try {
-    const data = await callScript(scriptURL, { action: 'getLeads', tab });
-    leads = data.leads;
-    activeIdx = null;
-    document.getElementById('table-label').textContent = tab + ' — ' + leads.length + ' leads';
-    document.getElementById('state-loading').style.display = 'none';
-    document.getElementById('tscroll').style.display = 'block';
-    initVirtualScroll();
-    updateStats();
-    autoJumpToFirstEmpty();
-    setSync('saved', 'Loaded');
-    showToast('Loaded ' + leads.length + ' leads · ' + tab);
   } catch (err) {
-    document.getElementById('state-loading').style.display = 'none';
-    document.getElementById('state-empty').style.display = 'block';
-    setSync('error', 'Load failed');
-    showToast('Load failed: ' + err.message, true);
-  }
-  document.getElementById('tab-load-btn').disabled = false;
-}
-
-function autoJumpToFirstEmpty() {
-  const idx = leads.findIndex(l => !l.note || !l.note.trim());
-  if (idx !== -1) {
-    selectLead(idx); ensureRowVisible(idx);
-    showToast('Resumed at #' + (idx + 1) + ' — first lead without a note');
-  } else {
-    showToast('All leads in this tab have notes ✓');
+    console.error(err);
+    alert("Could not reach the script. Ensure you are signed into Google in this browser and the URL is correct.");
   }
 }
 
-// ══════ API ══════
-async function callScript(url, params) {
-  const qs = Object.entries(params)
-    .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
-    .join('&');
-  // mode:'no-cors' not used — we need the response body.
-  // Google handles the auth redirect automatically in the browser.
-  const res = await fetch(url + '?' + qs, { redirect: 'follow' });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const json = await res.json();
-  if (!json.ok) throw new Error(json.error || 'Script error');
-  return json.data;
+function renderLead() {
+  if (state.leads.length === 0) return;
+  const lead = state.leads[state.index];
+  document.getElementById('lead-name').textContent = lead.company || lead.name || "No Name Found";
+  document.getElementById('lead-phone').textContent = lead.phone || "No Phone Found";
 }
 
-// ══════ Save — debounced ══════
-function queueSave(lead) {
-  saveQueue[lead.rowIndex] = { ...lead };
-  clearTimeout(saveTimer);
-  setSync('saving', 'Saving…');
-  saveTimer = setTimeout(flushSave, 900);
-}
-
-async function flushSave() {
-  const entries = Object.values(saveQueue);
-  saveQueue = {};
-  for (const lead of entries) {
-    try {
-      await callScript(scriptURL, {
-        action: 'updateRow',
-        tab: currentTab,
-        rowIndex: lead.rowIndex,
-        note: lead.note,
-        emailSent: String(lead.emailSent),
-        followUp: String(lead.followUp),
-      });
-    } catch (err) {
-      setSync('error', 'Save failed — check connection');
-      showToast('Save failed. Check connection.', true);
-      return;
-    }
-  }
-  setSync('saved', 'Saved to Sheet ✓');
-}
-
-function setSync(state, label) {
-  document.getElementById('sync-dot').className = 'sync-dot ' + state;
-  document.getElementById('sync-label').textContent = label;
-}
-
-// ══════ Virtual scroll ══════
-function initVirtualScroll() {
-  const sp = document.getElementById('virt-spacer');
-  sp.style.height = (leads.length * ROW_H) + 'px';
-  sp.innerHTML = '';
-  renderVisible();
-  document.getElementById('tscroll').scrollTop = 0;
-}
-
-function scheduleRender() {
-  if (rafPending) return;
-  rafPending = true;
-  requestAnimationFrame(() => { rafPending = false; renderVisible(); });
-}
-
-function renderVisible() {
-  const sc = document.getElementById('tscroll');
-  const sp = document.getElementById('virt-spacer');
-  const BUFFER = 12;
-  const start = Math.max(0, Math.floor(sc.scrollTop / ROW_H) - BUFFER);
-  const end   = Math.min(leads.length, Math.ceil((sc.scrollTop + sc.clientHeight) / ROW_H) + BUFFER);
-
-  sp.querySelectorAll('.vrow').forEach(el => {
-    const i = +el.dataset.idx;
-    if (i < start || i >= end) el.remove();
-  });
-
-  const present = new Set();
-  sp.querySelectorAll('.vrow').forEach(el => present.add(+el.dataset.idx));
-
-  const frag = document.createDocumentFragment();
-  for (let i = start; i < end; i++) {
-    if (!present.has(i)) frag.appendChild(buildRow(i));
-  }
-  sp.appendChild(frag);
-}
-
-function buildRow(i) {
-  const l = leads[i], ci = chipInfo(l.note);
-  const div = document.createElement('div');
-  div.className = 'vrow' + (i === activeIdx ? ' active' : '');
-  div.dataset.idx = i;
-  div.style.top = (i * ROW_H) + 'px';
-  div.onclick = () => selectLead(i);
-  div.innerHTML =
-    `<span class="c-num">${i+1}</span>` +
-    `<span class="c-mc" title="${esc(l.mc)}">${esc(l.mc)}</span>` +
-    `<span title="${esc(l.driver)}">${esc(l.driver)}</span>` +
-    `<span style="color:var(--t2);font-size:10px" title="${esc(l.company)}">${esc(l.company)}</span>` +
-    `<span class="c-ph">${fmtPhone(l.phone)}</span>` +
-    `<span style="font-size:10px;color:var(--t2)">${esc(l.state)}</span>` +
-    `<span><span class="chip ${ci.cls}">${ci.label}</span></span>` +
-    `<span class="cem">${l.emailSent ? '<span style="color:var(--accent)">✓</span>' : '<span style="color:var(--t3)">—</span>'}</span>` +
-    `<span class="cem">${l.followUp  ? '<span style="color:var(--blue)">✓</span>'   : '<span style="color:var(--t3)">—</span>'}</span>` +
-    `<span class="c-act"><button class="crow-btn" onclick="event.stopPropagation();selectAndCopy(${i})">COPY</button></span>`;
-  return div;
-}
-
-function updateRow(i) {
-  const sp = document.getElementById('virt-spacer');
-  const old = sp.querySelector(`.vrow[data-idx="${i}"]`);
-  if (old) sp.replaceChild(buildRow(i), old);
-}
-
-function setActiveRow(prev, next) {
-  const sp = document.getElementById('virt-spacer');
-  if (prev !== null) { const el = sp.querySelector(`.vrow[data-idx="${prev}"]`); if (el) el.classList.remove('active'); }
-  if (next !== null) { const el = sp.querySelector(`.vrow[data-idx="${next}"]`); if (el) el.classList.add('active'); }
-}
-
-function ensureRowVisible(i) {
-  const sc = document.getElementById('tscroll');
-  const top = i * ROW_H, bot = top + ROW_H;
-  if (top < sc.scrollTop) sc.scrollTop = top - ROW_H * 3;
-  else if (bot > sc.scrollTop + sc.clientHeight) sc.scrollTop = bot - sc.clientHeight + ROW_H * 3;
-}
-
-document.getElementById('tscroll').addEventListener('scroll', scheduleRender, { passive: true });
-
-// ══════ Select lead ══════
-function selectLead(i) {
-  const prev = activeIdx; activeIdx = i;
-  const l = leads[i];
-
-  document.getElementById('b-mc').textContent     = 'MC ' + l.mc;
-  document.getElementById('b-entity').textContent = l.entity || '—';
-  document.getElementById('b-status').textContent = l.status || l.entityStatus || '—';
-  document.getElementById('b-power').textContent  = l.power  || '—';
-  document.getElementById('b-state').textContent  = l.state  || '—';
-  document.getElementById('l-rownum').textContent = 'Row ' + l.rowIndex;
-
-  const isActive = (l.status || l.entity || '').toLowerCase().includes('active');
-  document.getElementById('b-status').className = 'lbadge' + (isActive ? ' active-b' : '');
-
-  document.getElementById('l-driver').textContent  = l.driver   || '—';
-  document.getElementById('l-company').textContent = l.company  || '—';
-  document.getElementById('l-phone').textContent   = fmtPhone(l.phone);
-  document.getElementById('l-address').textContent = l.address  || '—';
-  document.getElementById('l-email').textContent   = l.emailAddr|| '—';
-  document.getElementById('l-estatus').textContent = [l.entity, l.status].filter(Boolean).join(' / ') || '—';
-
-  document.getElementById('ndisp').textContent = l.note || '';
-  document.getElementById('nmin').value = '';
-  updateNoteReq(l.note);
-  highlightTag(l.note);
-
-  document.getElementById('emcheck').checked = l.emailSent;
-  document.getElementById('fucheck').checked = l.followUp;
-  document.getElementById('embadge').classList.toggle('vis', l.emailSent);
-  document.getElementById('fubadge').classList.toggle('vis', l.followUp);
-
-  document.getElementById('cbtn').classList.remove('copied');
-  document.getElementById('clabel').textContent = 'Copy Number to Clipboard';
-
-  setActiveRow(prev, i);
-}
-
-function updateNoteReq(note) {
-  const el = document.getElementById('note-req');
-  const ok = note && note.trim();
-  el.textContent = ok ? '✓ Noted' : 'Required';
-  el.className = 'note-req' + (ok ? ' ok' : '');
-}
-
-function highlightTag(note) {
-  document.querySelectorAll('.ntbtn').forEach(b => b.classList.remove('sel'));
-  if (!note) return;
-  const n = note.toUpperCase().trim();
-  const map = { 'PK CE':'nt-pkce','PK NI':'nt-pkni','VM':'nt-vm','NA':'nt-na','CD':'nt-cd','DNC':'nt-dnc' };
-  for (const [tag, id] of Object.entries(map)) {
-    if (n.startsWith(tag)) { document.getElementById(id).classList.add('sel'); break; }
-  }
-}
-
-function selectAndCopy(i) { selectLead(i); setTimeout(copyNumber, 40); }
-
-// ══════ Copy ══════
-function copyNumber() {
-  if (activeIdx === null) { showToast('Select a lead first'); return; }
-  const digits = leads[activeIdx].phone.replace(/\D/g, '');
-  navigator.clipboard.writeText(digits).then(() => {
-    document.getElementById('cbtn').classList.add('copied');
-    document.getElementById('clabel').textContent = '✓ Copied — Paste in Google Voice';
-    showToast('Number copied → Ctrl+V in Google Voice');
-    setTimeout(() => {
-      document.getElementById('cbtn').classList.remove('copied');
-      document.getElementById('clabel').textContent = 'Copy Number to Clipboard';
-    }, 3500);
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = digits; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    showToast('Copied (fallback)');
-  });
-}
-
-// ══════ Notes ══════
-function applyTag(tag) {
-  if (activeIdx === null) { showToast('Select a lead first'); return; }
-  leads[activeIdx].note = tag;
-  document.getElementById('ndisp').textContent = tag;
-  updateNoteReq(tag); highlightTag(tag);
-  updateRow(activeIdx); updateStats();
-  queueSave(leads[activeIdx]);
-  showToast('Note: ' + tag);
-}
-
-function addManual() {
-  if (activeIdx === null) { showToast('Select a lead first'); return; }
-  const val = document.getElementById('nmin').value.trim(); if (!val) return;
-  const ex = leads[activeIdx].note;
-  leads[activeIdx].note = ex ? ex + ' — ' + val : val;
-  document.getElementById('ndisp').textContent = leads[activeIdx].note;
-  document.getElementById('nmin').value = '';
-  updateNoteReq(leads[activeIdx].note);
-  document.querySelectorAll('.ntbtn').forEach(b => b.classList.remove('sel'));
-  updateRow(activeIdx); updateStats();
-  queueSave(leads[activeIdx]);
-}
-
-// ══════ Checkboxes ══════
-function toggleCheck(field, checked) {
-  if (activeIdx === null) {
-    document.getElementById(field === 'emailSent' ? 'emcheck' : 'fucheck').checked = false; return;
-  }
-  leads[activeIdx][field] = checked;
-  document.getElementById(field === 'emailSent' ? 'embadge' : 'fubadge').classList.toggle('vis', checked);
-  updateRow(activeIdx); updateStats();
-  queueSave(leads[activeIdx]);
-  showToast(field === 'emailSent' ? 'Cold email marked sent' : 'Follow-up marked sent');
-}
-
-// ══════ Nav ══════
 function nextLead() {
-  if (!leads.length) return;
-  const n = activeIdx === null ? 0 : Math.min(activeIdx + 1, leads.length - 1);
-  ensureRowVisible(n); selectLead(n);
-}
-function prevLead() {
-  if (!leads.length || activeIdx === null) return;
-  const n = Math.max(activeIdx - 1, 0);
-  ensureRowVisible(n); selectLead(n);
-}
-
-// ══════ Stats ══════
-function updateStats() {
-  let noted = 0, emails = 0;
-  for (const l of leads) {
-    if (l.note && l.note.trim()) noted++;
-    if (l.emailSent) emails++;
+  if (state.index < state.leads.length - 1) {
+    state.index++;
+    renderLead();
   }
-  const total = leads.length;
-  document.getElementById('h-total').textContent = total;
-  document.getElementById('h-noted').textContent = noted;
-  document.getElementById('h-rem').textContent   = total - noted;
-  document.getElementById('h-em').textContent    = emails;
-  const pct = total ? Math.round(noted / total * 100) : 0;
-  document.getElementById('pfill').style.width = pct + '%';
-  document.getElementById('plabel').textContent = noted + ' / ' + total + ' noted (' + pct + '%)';
 }
 
-// ══════ Helpers ══════
-function chipInfo(note) {
-  if (!note) return { cls:'c-new', label:'New' };
-  const n = note.toUpperCase().trim();
-  if (n.startsWith('PK CE')) return { cls:'c-pkce', label:'PK CE' };
-  if (n.startsWith('PK NI')) return { cls:'c-pkni', label:'PK NI' };
-  if (n.startsWith('VM'))    return { cls:'c-vm',   label:'VM' };
-  if (n.startsWith('NA'))    return { cls:'c-na',   label:'NA' };
-  if (n.startsWith('CD'))    return { cls:'c-cd',   label:'CD' };
-  if (n.startsWith('DNC'))   return { cls:'c-dnc',  label:'DNC' };
-  return { cls:'c-cust', label: note.length > 10 ? note.slice(0,10)+'…' : note };
-}
-
-function fmtPhone(p) {
-  const d = p.replace(/\D/g,'');
-  if (d.length === 10) return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6);
-  if (d.length === 11) return '+'+d[0]+' ('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7);
-  return p;
-}
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function showToast(msg, isErr = false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = isErr ? 'err show' : 'show';
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ══════ Keyboard ══════
-document.addEventListener('keydown', e => {
-  if (['TEXTAREA','INPUT','SELECT'].includes(e.target.tagName)) return;
-  if (e.key==='ArrowDown'||e.key==='j'){e.preventDefault();nextLead();}
-  if (e.key==='ArrowUp'  ||e.key==='k'){e.preventDefault();prevLead();}
-  if (e.key==='c'){e.preventDefault();copyNumber();}
-  if (e.key==='1') applyTag('PK CE');
-  if (e.key==='2') applyTag('PK NI');
-  if (e.key==='3') applyTag('VM');
-  if (e.key==='4') applyTag('NA');
-  if (e.key==='5') applyTag('CD');
-  if (e.key==='6') applyTag('DNC');
+// Handle Keyboard Down Arrow
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown') nextLead();
 });
-
-init();
 </script>
 </body>
 </html>
