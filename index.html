@@ -89,23 +89,24 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
 .pfill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
 .plabel{font-family:var(--mono);font-size:9px;color:var(--t3);white-space:nowrap}
 
-/* ── Layout ── */
-.main{display:grid;grid-template-columns:1fr 424px;flex:1;overflow:hidden}
+/* ── Layout — wider panel ── */
+.main{display:grid;grid-template-columns:1fr 480px;flex:1;overflow:hidden}
 
 /* ── Left ── */
-.left{display:flex;flex-direction:column;overflow:hidden;padding:12px 16px}
+.left{display:flex;flex-direction:column;overflow:hidden;padding:10px 14px}
 .slabel{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin-bottom:7px}
 
 .tscroll{flex:1;overflow-y:auto;overflow-x:hidden;position:relative}
 .tscroll::-webkit-scrollbar{width:4px}
 .tscroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.thead{display:grid;grid-template-columns:32px 78px 1fr 1fr 108px 30px 78px 30px 30px 58px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:2}
-.thead>span{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:6px 5px;white-space:nowrap;overflow:hidden}
-#virt-spacer{position:relative;will-change:contents}
-.vrow{display:grid;grid-template-columns:32px 78px 1fr 1fr 108px 30px 78px 30px 30px 58px;border-bottom:1px solid var(--border);cursor:pointer;position:absolute;width:100%;left:0;transition:background .07s}
+.thead{display:grid;grid-template-columns:28px 72px 1fr 1fr 100px 28px 70px 28px 28px 52px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:2}
+.thead>span{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:6px 4px;white-space:nowrap;overflow:hidden}
+#virt-spacer{position:relative}
+/* no transition on rows — instant response */
+.vrow{display:grid;grid-template-columns:28px 72px 1fr 1fr 100px 28px 70px 28px 28px 52px;border-bottom:1px solid var(--border);cursor:pointer;position:absolute;width:100%;left:0}
 .vrow:hover{background:var(--surface)}
 .vrow.active{background:var(--adim)}
-.vrow>span{padding:0 5px;font-size:11px;color:var(--text);display:flex;align-items:center;height:var(--row-h);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.vrow>span{padding:0 4px;font-size:11px;color:var(--text);display:flex;align-items:center;height:var(--row-h);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .vrow .c-num{font-family:var(--mono);font-size:9px;color:var(--t3)}
 .vrow .c-mc{font-family:var(--mono);font-size:9px;color:var(--t3)}
 .vrow .c-ph{font-family:var(--mono);font-size:10px;color:var(--accent)}
@@ -120,87 +121,105 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
 .c-cd{background:rgba(255,94,207,.10);color:var(--pink)}
 .c-dnc{background:rgba(179,136,255,.13);color:var(--purple)}
 .c-cust{background:var(--adim);color:var(--accent)}
-.crow-btn{font-family:var(--mono);font-size:8px;font-weight:600;padding:3px 8px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--t3);cursor:pointer;transition:all .1s}
+.crow-btn{font-family:var(--mono);font-size:8px;font-weight:600;padding:3px 8px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--t3);cursor:pointer}
 .crow-btn:hover,.vrow.active .crow-btn{border-color:var(--accent);color:var(--accent);background:var(--adim)}
 .empty-state{text-align:center;padding:50px 16px;color:var(--t3);font-family:var(--mono);font-size:10px;line-height:2.4}
 .loading-state{text-align:center;padding:50px 16px;color:var(--t2);font-family:var(--mono);font-size:10px;line-height:2}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px}
 
-/* ── Right panel ── */
+/* ══ RIGHT PANEL — big and prominent ══ */
 .panel{border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
 
-/* Active lead card */
-.lcard{padding:16px 18px 0;flex-shrink:0}
+/* Lead card — takes up solid top chunk */
+.lcard{padding:14px 16px 0;flex-shrink:0}
 .lcard-inner{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.lcard-bar{height:3px;background:linear-gradient(90deg,var(--accent),rgba(0,232,122,.12))}
-.lcard-body{padding:16px}
-.lcard-toprow{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.lcard-bar{height:4px;background:linear-gradient(90deg,var(--accent),rgba(0,232,122,.08))}
+.lcard-body{padding:16px 18px 18px}
+
+/* Small meta badges row */
+.lcard-toprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .lcard-badges{display:flex;gap:5px;flex-wrap:wrap}
-.lbadge{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:var(--surface2);color:var(--t3);border:1px solid var(--border)}
+.lbadge{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--surface2);color:var(--t3);border:1px solid var(--border)}
 .lbadge.active-b{background:rgba(0,232,122,.08);color:var(--accent);border-color:rgba(0,232,122,.2)}
-.lcard-rownum{font-family:var(--mono);font-size:9px;color:var(--t3);white-space:nowrap}
-.ldriver{font-size:21px;font-weight:500;color:var(--text);line-height:1.1;margin-bottom:3px;letter-spacing:-.01em}
-.lcompany{font-size:12px;color:var(--t2);margin-bottom:13px;font-weight:300}
+.lcard-rownum{font-family:var(--mono);font-size:9px;color:var(--t3)}
+
+/* Company name — BIG and prominent */
+.lcompany-name{font-size:22px;font-weight:600;color:var(--text);line-height:1.1;margin-bottom:4px;letter-spacing:-.02em}
+/* Driver — smaller secondary */
+.ldriver-sub{font-size:12px;color:var(--t2);margin-bottom:14px;font-weight:300}
+
+/* Data fields */
 .ldata-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.lfield{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 11px}
-.lfield-label{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
-.lfield-value{font-size:11px;color:var(--text);line-height:1.4;word-break:break-all}
-.lfield-value.accent{color:var(--accent);font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:.04em;text-shadow:0 0 12px var(--aglow)}
+.lfield{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 13px}
+.lfield-label{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.lfield-value{font-size:12px;color:var(--text);line-height:1.4;word-break:break-all}
+/* Phone — extra big */
+.lfield-value.accent{color:var(--accent);font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:.05em;text-shadow:0 0 18px var(--aglow);line-height:1}
+/* Address — readable */
+.lfield-value.addr{font-size:12px;line-height:1.5}
+/* Email */
 .lfield-value.mono{font-family:var(--mono);font-size:10px}
+/* Power units — big number */
+.lfield-value.power{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text)}
 .lfield.span2{grid-column:span 2}
-.cbtn{width:100%;padding:11px;border-radius:8px;border:2px solid var(--accent);background:var(--adim);color:var(--accent);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:all .13s}
+
+.cbtn{width:100%;padding:13px;border-radius:8px;border:2px solid var(--accent);background:var(--adim);color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
 .cbtn:hover{background:rgba(0,232,122,.17)}
 .cbtn.copied{background:var(--accent);color:#001a0d}
 
 /* Lower panel scroll */
-.panel-scroll{flex:1;overflow-y:auto;padding:12px 18px;display:flex;flex-direction:column;gap:10px}
+.panel-scroll{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
 .panel-scroll::-webkit-scrollbar{width:3px}
 .panel-scroll::-webkit-scrollbar-thumb{background:var(--border2)}
 
-/* Note */
-.note-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
-.note-req{font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:4px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,77,77,.08);color:var(--red);border:1px solid rgba(255,77,77,.2);transition:all .2s}
+/* Note section */
+.note-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.note-req{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:4px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,77,77,.08);color:var(--red);border:1px solid rgba(255,77,77,.2)}
 .note-req.ok{background:var(--adim);color:var(--accent);border-color:rgba(0,232,122,.2)}
-.nsec{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px}
-.ntags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-.ntbtn{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.06em;padding:5px 9px;border-radius:4px;border:1px solid var(--border2);background:transparent;cursor:pointer;transition:all .11s;text-transform:uppercase}
-.nt-pkce{color:var(--amber);border-color:rgba(245,166,35,.3)}.nt-pkce:hover,.nt-pkce.sel{background:rgba(245,166,35,.14);border-color:var(--amber)}
-.nt-pkni{color:var(--red);border-color:rgba(255,77,77,.3)}.nt-pkni:hover,.nt-pkni.sel{background:rgba(255,77,77,.11);border-color:var(--red)}
-.nt-vm{color:var(--blue);border-color:rgba(77,166,255,.3)}.nt-vm:hover,.nt-vm.sel{background:rgba(77,166,255,.11);border-color:var(--blue)}
-.nt-na{color:var(--t2);border-color:var(--border2)}.nt-na:hover,.nt-na.sel{background:rgba(255,255,255,.06);border-color:var(--t2)}
-.nt-cd{color:var(--pink);border-color:rgba(255,94,207,.3)}.nt-cd:hover,.nt-cd.sel{background:rgba(255,94,207,.09);border-color:var(--pink)}
-.nt-dnc{color:var(--purple);border-color:rgba(179,136,255,.3)}.nt-dnc:hover,.nt-dnc.sel{background:rgba(179,136,255,.11);border-color:var(--purple)}
-.ndivider{display:flex;align-items:center;gap:7px;margin:7px 0}
+.nsec{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px}
+
+/* TAG BUTTONS — big, easy to hit */
+.ntags{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
+.ntbtn{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.05em;padding:10px 8px;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;text-transform:uppercase;text-align:center}
+.nt-pkce{color:var(--amber);border-color:rgba(245,166,35,.3)}.nt-pkce:hover,.nt-pkce.sel{background:rgba(245,166,35,.18);border-color:var(--amber)}
+.nt-pkni{color:var(--red);border-color:rgba(255,77,77,.3)}.nt-pkni:hover,.nt-pkni.sel{background:rgba(255,77,77,.15);border-color:var(--red)}
+.nt-vm{color:var(--blue);border-color:rgba(77,166,255,.3)}.nt-vm:hover,.nt-vm.sel{background:rgba(77,166,255,.15);border-color:var(--blue)}
+.nt-na{color:var(--t2);border-color:var(--border2)}.nt-na:hover,.nt-na.sel{background:rgba(255,255,255,.08);border-color:var(--t2)}
+.nt-cd{color:var(--pink);border-color:rgba(255,94,207,.3)}.nt-cd:hover,.nt-cd.sel{background:rgba(255,94,207,.13);border-color:var(--pink)}
+.nt-dnc{color:var(--purple);border-color:rgba(179,136,255,.3)}.nt-dnc:hover,.nt-dnc.sel{background:rgba(179,136,255,.15);border-color:var(--purple)}
+
+.ndivider{display:flex;align-items:center;gap:7px;margin:8px 0}
 .ndivider span{font-family:var(--mono);font-size:8px;color:var(--t3);white-space:nowrap;letter-spacing:.1em;text-transform:uppercase}
 .ndivider::before,.ndivider::after{content:'';flex:1;height:1px;background:var(--border)}
-.nmanual{display:flex;gap:5px}
-.nminput{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:7px 9px;font-family:var(--sans);font-size:11px;color:var(--text);outline:none;transition:border .11s}
+.nmanual{display:flex;gap:6px}
+.nminput{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:9px 10px;font-family:var(--sans);font-size:12px;color:var(--text);outline:none}
 .nminput::placeholder{color:var(--t3)}
 .nminput:focus{border-color:var(--accent)}
-.nmadd{padding:7px 10px;border-radius:4px;border:1px solid rgba(0,232,122,.22);background:var(--adim);color:var(--accent);font-family:var(--mono);font-size:9px;font-weight:600;cursor:pointer}
+.nmadd{padding:9px 13px;border-radius:5px;border:1px solid rgba(0,232,122,.25);background:var(--adim);color:var(--accent);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer}
 .nmadd:hover{background:rgba(0,232,122,.2)}
-.ndisp{font-size:11px;color:var(--t2);line-height:1.6;margin-top:8px;word-break:break-word;border-top:1px solid var(--border);padding-top:8px;min-height:16px}
-.ndisp:empty::before{content:'Required — tag or type a note after each call';color:var(--red);font-style:italic;font-size:10px}
+.ndisp{font-size:12px;color:var(--t2);line-height:1.6;margin-top:9px;word-break:break-word;border-top:1px solid var(--border);padding-top:9px;min-height:18px}
+.ndisp:empty::before{content:'Required — tag or type a note after each call';color:var(--red);font-style:italic;font-size:11px}
 
-/* Checkboxes */
-.checks-row{display:flex;flex-direction:column;gap:7px}
-.chk-row{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 12px;display:flex;align-items:center;gap:10px}
-.chk-row label{font-size:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:8px;flex:1;user-select:none}
-.chk-row label em{font-style:normal;font-size:10px;color:var(--t3);font-family:var(--mono)}
-.chk-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
-.chkbadge{font-family:var(--mono);font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:.07em;text-transform:uppercase;opacity:0;transition:opacity .2s}
+/* CHECKBOXES — bigger, toggle-style */
+.checks-row{display:flex;flex-direction:column;gap:8px}
+.chk-row{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.chk-row:hover{border-color:var(--border2)}
+.chk-row label{font-size:13px;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:10px;flex:1;user-select:none}
+.chk-row label em{font-style:normal;font-size:11px;color:var(--t3);font-family:var(--mono)}
+.chk-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.chkbadge{font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.07em;text-transform:uppercase;opacity:0}
 .chkbadge.vis{opacity:1}
-.badge-email{background:rgba(0,232,122,.12);color:var(--accent)}
-.badge-follow{background:rgba(77,166,255,.12);color:var(--blue)}
+.badge-email{background:rgba(0,232,122,.14);color:var(--accent)}
+.badge-follow{background:rgba(77,166,255,.14);color:var(--blue)}
 
-/* Legend */
+/* Legend — compact */
 .legend{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 13px}
 .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;margin-top:7px}
 .litem{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t2)}
 
-.navrow{display:flex;gap:6px;padding:0 18px 14px}
-.navrow .btn{flex:1}
+.navrow{display:flex;gap:8px;padding:0 16px 14px}
+.navrow .btn{flex:1;padding:10px;font-size:12px}
 
 /* Toast */
 #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--accent);color:#001a0d;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:8px 16px;border-radius:7px;transition:transform .22s cubic-bezier(.34,1.56,.64,1);pointer-events:none;z-index:999;box-shadow:0 3px 16px var(--aglow)}
@@ -345,31 +364,39 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
                 <span class="lbadge" id="b-mc">MC —</span>
                 <span class="lbadge" id="b-entity">—</span>
                 <span class="lbadge" id="b-status">—</span>
-                <span class="lbadge" id="b-power">—</span>
                 <span class="lbadge" id="b-state">—</span>
               </div>
               <span class="lcard-rownum" id="l-rownum">Row —</span>
             </div>
-            <div class="ldriver" id="l-driver">Select a lead</div>
-            <div class="lcompany" id="l-company">—</div>
+
+            <!-- Company name — biggest element -->
+            <div class="lcompany-name" id="l-company">Select a lead</div>
+            <!-- Driver — secondary -->
+            <div class="ldriver-sub" id="l-driver">—</div>
+
             <div class="ldata-grid">
+              <!-- Phone — full width, huge -->
               <div class="lfield span2">
-                <div class="lfield-label">Phone Number</div>
+                <div class="lfield-label">📞 Phone Number</div>
                 <div class="lfield-value accent" id="l-phone">—</div>
               </div>
+              <!-- Address — full width -->
               <div class="lfield span2">
-                <div class="lfield-label">Physical Address</div>
-                <div class="lfield-value" id="l-address">—</div>
+                <div class="lfield-label">📍 Physical Address</div>
+                <div class="lfield-value addr" id="l-address">—</div>
               </div>
+              <!-- Email — left -->
               <div class="lfield">
-                <div class="lfield-label">Email Address</div>
+                <div class="lfield-label">✉ Email</div>
                 <div class="lfield-value mono" id="l-email">—</div>
               </div>
+              <!-- Power units — right, prominent number -->
               <div class="lfield">
-                <div class="lfield-label">Entity / Status</div>
-                <div class="lfield-value" id="l-estatus">—</div>
+                <div class="lfield-label">⚡ Power Units</div>
+                <div class="lfield-value power" id="l-power">—</div>
               </div>
             </div>
+
             <button class="cbtn" id="cbtn" onclick="copyNumber()">
               <span id="clabel">Copy Number to Clipboard</span>
             </button>
@@ -755,30 +782,38 @@ function selectLead(i) {
 
   document.getElementById('b-mc').textContent     = 'MC ' + l.mc;
   document.getElementById('b-entity').textContent = l.entity || '—';
-  document.getElementById('b-status').textContent = l.status || l.entityStatus || '—';
-  document.getElementById('b-power').textContent  = l.power  || '—';
+  document.getElementById('b-status').textContent = l.status || '—';
   document.getElementById('b-state').textContent  = l.state  || '—';
   document.getElementById('l-rownum').textContent = 'Row ' + l.rowIndex;
 
   const isActive = (l.status || l.entity || '').toLowerCase().includes('active');
   document.getElementById('b-status').className = 'lbadge' + (isActive ? ' active-b' : '');
 
-  document.getElementById('l-driver').textContent  = l.driver   || '—';
-  document.getElementById('l-company').textContent = l.company  || '—';
+  // Company — big heading
+  document.getElementById('l-company').textContent = l.company || '—';
+  // Driver — sub
+  document.getElementById('l-driver').textContent  = l.driver  || '—';
   document.getElementById('l-phone').textContent   = fmtPhone(l.phone);
-  document.getElementById('l-address').textContent = l.address  || '—';
-  document.getElementById('l-email').textContent   = l.emailAddr|| '—';
-  document.getElementById('l-estatus').textContent = [l.entity, l.status].filter(Boolean).join(' / ') || '—';
+  document.getElementById('l-address').textContent = l.address || '—';
+  document.getElementById('l-email').textContent   = l.emailAddr || '—';
+
+  // Extract numeric power units from e.g. "Non-CMV Units: Drivers: 3" or "4"
+  const powerRaw = l.power || '—';
+  const powerMatch = powerRaw.match(/\d+/);
+  document.getElementById('l-power').textContent = powerMatch ? powerMatch[0] : powerRaw;
 
   document.getElementById('ndisp').textContent = l.note || '';
   document.getElementById('nmin').value = '';
   updateNoteReq(l.note);
   highlightTag(l.note);
 
-  document.getElementById('emcheck').checked = l.emailSent;
-  document.getElementById('fucheck').checked = l.followUp;
-  document.getElementById('embadge').classList.toggle('vis', l.emailSent);
-  document.getElementById('fubadge').classList.toggle('vis', l.followUp);
+  // Fix checkbox bug — explicitly set checked state from data
+  const emEl = document.getElementById('emcheck');
+  const fuEl = document.getElementById('fucheck');
+  emEl.checked = !!l.emailSent;
+  fuEl.checked = !!l.followUp;
+  document.getElementById('embadge').classList.toggle('vis', !!l.emailSent);
+  document.getElementById('fubadge').classList.toggle('vis', !!l.followUp);
 
   document.getElementById('cbtn').classList.remove('copied');
   document.getElementById('clabel').textContent = 'Copy Number to Clipboard';
@@ -852,11 +887,16 @@ function addManual() {
 // ══════ Checkboxes ══════
 function toggleCheck(field, checked) {
   if (activeIdx === null) {
-    document.getElementById(field === 'emailSent' ? 'emcheck' : 'fucheck').checked = false; return;
+    // No lead selected — revert the checkbox visually
+    document.getElementById(field === 'emailSent' ? 'emcheck' : 'fucheck').checked = false;
+    showToast('Select a lead first'); return;
   }
   leads[activeIdx][field] = checked;
-  document.getElementById(field === 'emailSent' ? 'embadge' : 'fubadge').classList.toggle('vis', checked);
-  updateRow(activeIdx); updateStats();
+  // Keep badge in sync
+  const badgeId = field === 'emailSent' ? 'embadge' : 'fubadge';
+  document.getElementById(badgeId).classList.toggle('vis', checked);
+  updateRow(activeIdx);
+  updateStats();
   queueSave(leads[activeIdx]);
   showToast(field === 'emailSent' ? 'Cold email marked sent' : 'Follow-up marked sent');
 }
