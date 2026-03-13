@@ -252,11 +252,11 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
     <div class="setup-step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <div class="step-label">Deploy it as a Web App</div>
+        <div class="step-label">Set your secret token inside Code.gs</div>
         <div class="step-hint">
-          <strong>Deploy → New deployment → Web app</strong><br>
-          Execute as: <code>Me</code> &nbsp;·&nbsp; Who has access: <code>Anyone with a Google account</code><br>
-          Click Deploy → Authorize → copy the URL
+          In <code>Code.gs</code> find the line:<br>
+          <code>const SECRET_TOKEN = 'CHANGE_THIS_TO_YOUR_SECRET';</code><br>
+          Change it to any password you choose, e.g. <code>'zaighum2025'</code>
         </div>
       </div>
     </div>
@@ -264,22 +264,35 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
     <div class="setup-step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <div class="step-label">Paste your deployment URL here</div>
+        <div class="step-label">Deploy it as a Web App</div>
+        <div class="step-hint">
+          <strong>Deploy → New deployment → Web app</strong><br>
+          Execute as: <code>Me</code> &nbsp;·&nbsp; Who has access: <code>Anyone</code><br>
+          Click Deploy → Authorize → copy the URL
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-label">Paste your deployment URL and token below</div>
         <div class="step-hint">Looks like: <code>https://script.google.com/macros/s/…/exec</code></div>
-        <input class="step-input" id="script-url-input" type="text" placeholder="https://script.google.com/macros/s/.../exec">
+        <input class="step-input" id="script-url-input" type="text" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px">
+        <input class="step-input" id="script-token-input" type="password" placeholder="Your secret token (e.g. zaighum2025)">
       </div>
     </div>
 
     <div class="setup-err" id="setup-err"></div>
 
     <button class="connect-btn" id="connect-btn" onclick="connectScript()">
-      Connect &amp; Sign in with Google
+      Connect &amp; Load Tabs
     </button>
 
     <div class="setup-note">
-      <strong>Security:</strong> Your Sheet is protected by Google account login.<br>
-      Only people you've shared the Sheet with can access the data.<br>
-      Your Script URL is stored only in <em>this browser</em> — never in the code or GitHub repo.
+      <strong>Security:</strong> Your token is stored only in <em>this browser</em> — never in the GitHub repo or code.<br>
+      Anyone without the token gets rejected even if they find the Script URL.<br>
+      Set <code>Who has access: Anyone</code> in the deployment (required to bypass Google's CORS block).
     </div>
   </div>
 </div>
@@ -434,6 +447,7 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
 <script>
 // ══════ State ══════
 let scriptURL = '';
+let scriptToken = '';
 let leads = [], activeIdx = null, currentTab = '';
 const ROW_H = 36;
 let rafPending = false;
@@ -441,72 +455,67 @@ let saveQueue = {}, saveTimer = null;
 
 // ══════ Init ══════
 function init() {
-  const saved = localStorage.getItem('dialerScriptURL');
-  if (saved) {
-    scriptURL = saved;
-    document.getElementById('script-url-input').value = saved;
-    document.getElementById('saved-url-label').textContent = '✓  ' + saved.slice(0, 52) + '…';
+  const savedURL   = localStorage.getItem('dialerScriptURL');
+  const savedToken = localStorage.getItem('dialerToken');
+  if (savedURL && savedToken) {
+    scriptURL   = savedURL;
+    scriptToken = savedToken;
+    document.getElementById('script-url-input').value   = savedURL;
+    document.getElementById('script-token-input').value = savedToken;
+    document.getElementById('saved-url-label').textContent = '✓  ' + savedURL.slice(0, 48) + '…';
     document.getElementById('saved-url-row').style.display = 'flex';
-    connectScript(true); // auto-connect silently
+    connectScript(true);
   }
-  // hide tscroll until loaded
   document.getElementById('tscroll').style.display = 'none';
   document.getElementById('state-empty').style.display = 'none';
 }
 
 // ══════ Connect ══════
 async function connectScript(silent = false) {
-  const input = document.getElementById('script-url-input').value.trim();
-  const url = silent ? scriptURL : input;
-  if (!url) { showSetupErr('Please paste your Apps Script URL'); return; }
+  const inputURL   = document.getElementById('script-url-input').value.trim();
+  const inputToken = document.getElementById('script-token-input').value.trim();
+  const url   = silent ? scriptURL   : inputURL;
+  const token = silent ? scriptToken : inputToken;
+
+  if (!url)   { showSetupErr('Please paste your Apps Script URL'); return; }
+  if (!token) { showSetupErr('Please enter your secret token'); return; }
 
   const btn = document.getElementById('connect-btn');
   btn.disabled = true;
   btn.textContent = 'Connecting…';
   hideSetupErr();
 
-  try {
-    // This call will trigger Google login redirect if not signed in.
-    // After login, Google redirects back and this succeeds.
-    const data = await callScript(url, { action: 'getTabs' });
-    scriptURL = url;
-    localStorage.setItem('dialerScriptURL', url);
+  // Temporarily set so callScript can use them
+  scriptURL   = url;
+  scriptToken = token;
 
+  try {
+    const data = await callScript(url, { action: 'getTabs' });
+    localStorage.setItem('dialerScriptURL', url);
+    localStorage.setItem('dialerToken', token);
     populateTabs(data.tabs);
     showApp();
-
-    // Show logged-in user if returned
-    if (data.user) {
-      const pill = document.getElementById('user-pill');
-      pill.textContent = data.user;
-      pill.classList.add('vis');
-    }
     setSync('saved', 'Connected');
-
   } catch (err) {
     btn.disabled = false;
-    btn.textContent = 'Connect & Sign in with Google';
-    if (!silent) {
-      // If the error looks like a redirect/auth issue, give a helpful message
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-        showSetupErr('Could not reach the script. Make sure you\'re signed into Google and the Script URL is correct. The browser may open a Google login tab — sign in there then click Connect again.');
-      } else {
-        showSetupErr('Error: ' + err.message);
-      }
-    } else {
-      setSync('error', 'Auto-connect failed — click ⚙ to reconnect');
-    }
+    btn.textContent = 'Connect & Load Tabs';
+    scriptURL = localStorage.getItem('dialerScriptURL') || '';
+    scriptToken = localStorage.getItem('dialerToken') || '';
+    if (!silent) showSetupErr('Error: ' + err.message);
+    else setSync('error', 'Auto-connect failed — click ⚙ to reconnect');
   }
 }
 
 function forgetScript() {
   localStorage.removeItem('dialerScriptURL');
+  localStorage.removeItem('dialerToken');
   localStorage.removeItem('dialerLastTab');
-  scriptURL = '';
+  scriptURL = ''; scriptToken = '';
   document.getElementById('saved-url-row').style.display = 'none';
   document.getElementById('script-url-input').value = '';
+  document.getElementById('script-token-input').value = '';
   document.getElementById('connect-btn').disabled = false;
-  document.getElementById('connect-btn').textContent = 'Connect & Sign in with Google';
+  document.getElementById('connect-btn').textContent = 'Connect & Load Tabs';
   document.getElementById('user-pill').classList.remove('vis');
 }
 
@@ -524,7 +533,7 @@ function showSetup() {
   document.getElementById('setup-screen').style.display = 'flex';
   document.getElementById('app').classList.remove('vis');
   document.getElementById('connect-btn').disabled = false;
-  document.getElementById('connect-btn').textContent = 'Connect & Sign in with Google';
+  document.getElementById('connect-btn').textContent = 'Connect & Load Tabs';
 }
 
 function populateTabs(tabs) {
@@ -582,18 +591,47 @@ function autoJumpToFirstEmpty() {
   }
 }
 
-// ══════ API ══════
-async function callScript(url, params) {
-  const qs = Object.entries(params)
-    .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
-    .join('&');
-  // mode:'no-cors' not used — we need the response body.
-  // Google handles the auth redirect automatically in the browser.
-  const res = await fetch(url + '?' + qs, { redirect: 'follow' });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const json = await res.json();
-  if (!json.ok) throw new Error(json.error || 'Script error');
-  return json.data;
+// ══════ API — JSONP (bypasses CORS with Google Apps Script) ══════
+// fetch() cannot call Apps Script from GitHub Pages due to CORS.
+// JSONP injects a <script> tag instead — no CORS restriction applies.
+let _jsonpCounter = 0;
+
+function callScript(url, params) {
+  return new Promise((resolve, reject) => {
+    const cbName = '__dialerCb' + (++_jsonpCounter);
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      const s = document.getElementById('jsonp_' + cbName);
+      if (s) s.remove();
+      reject(new Error('Request timed out — check your Script URL and token'));
+    }, 15000);
+
+    window[cbName] = function(json) {
+      clearTimeout(timeout);
+      delete window[cbName];
+      const s = document.getElementById('jsonp_' + cbName);
+      if (s) s.remove();
+      if (!json.ok) { reject(new Error(json.error || 'Script error')); return; }
+      resolve(json.data);
+    };
+
+    // Always include the token and JSONP callback name
+    const allParams = { ...params, token: scriptToken, callback: cbName };
+    const qs = Object.entries(allParams)
+      .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(String(v)))
+      .join('&');
+
+    const script = document.createElement('script');
+    script.id = 'jsonp_' + cbName;
+    script.src = url + '?' + qs;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      script.remove();
+      reject(new Error('Could not reach the script URL. Check it is correct and deployed as "Anyone".'));
+    };
+    document.head.appendChild(script);
+  });
 }
 
 // ══════ Save — debounced ══════
