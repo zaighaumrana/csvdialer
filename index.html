@@ -221,6 +221,79 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
 .navrow{display:flex;gap:8px;padding:0 16px 14px}
 .navrow .btn{flex:1;padding:10px;font-size:12px}
 
+/* ══ STATS PANEL ══ */
+#stats-panel{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+#stats-panel.open{display:flex}
+.sp-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:780px;max-height:90vh;overflow-y:auto;padding:24px}
+.sp-card::-webkit-scrollbar{width:4px}
+.sp-card::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.sp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sp-title{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+.sp-close{background:transparent;border:1px solid var(--border2);color:var(--t2);font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:5px;cursor:pointer}
+.sp-close:hover{border-color:var(--red);color:var(--red)}
+
+/* idle warning banner */
+.idle-banner{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);border-radius:8px;padding:10px 16px;display:none;align-items:center;gap:10px;margin-bottom:16px}
+.idle-banner.vis{display:flex}
+.idle-icon{font-size:18px}
+.idle-text{font-family:var(--mono);font-size:11px;color:var(--amber);flex:1}
+.idle-dismiss{background:transparent;border:1px solid rgba(245,166,35,.4);color:var(--amber);font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:4px;cursor:pointer}
+
+/* top KPI row */
+.sp-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.sp-kpi{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+.sp-kpi-val{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--text);line-height:1;margin-bottom:4px}
+.sp-kpi-val.green{color:var(--accent)}
+.sp-kpi-val.amber{color:var(--amber)}
+.sp-kpi-val.red{color:var(--red)}
+.sp-kpi-val.blue{color:var(--blue)}
+.sp-kpi-label{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--t3)}
+
+/* section */
+.sp-section{margin-bottom:16px}
+.sp-section-title{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+/* outcome bars */
+.sp-outcomes{display:flex;flex-direction:column;gap:7px}
+.sp-outcome-row{display:flex;align-items:center;gap:10px}
+.sp-outcome-label{font-family:var(--mono);font-size:10px;font-weight:600;width:52px;flex-shrink:0}
+.sp-outcome-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.sp-outcome-bar{height:100%;border-radius:4px}
+.sp-outcome-count{font-family:var(--mono);font-size:10px;color:var(--t2);width:28px;text-align:right;flex-shrink:0}
+.sp-outcome-pct{font-family:var(--mono);font-size:10px;color:var(--t3);width:36px;text-align:right;flex-shrink:0}
+
+/* time row */
+.sp-time-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.sp-time-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.sp-time-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);margin-bottom:3px}
+.sp-time-label{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+
+/* activity log */
+.sp-log{max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.sp-log::-webkit-scrollbar{width:3px}
+.sp-log::-webkit-scrollbar-thumb{background:var(--border2)}
+.sp-log-row{display:flex;align-items:center;gap:10px;padding:5px 8px;border-radius:5px;background:var(--bg);border:1px solid var(--border)}
+.sp-log-time{font-family:var(--mono);font-size:9px;color:var(--t3);width:52px;flex-shrink:0}
+.sp-log-tag{font-family:var(--mono);font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;flex-shrink:0}
+.sp-log-co{font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.sp-log-gap{font-family:var(--mono);font-size:9px;color:var(--t3);flex-shrink:0}
+
+/* footer */
+.sp-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.sp-footer-note{font-family:var(--mono);font-size:9px;color:var(--t3);line-height:1.6}
+.sp-reset-btn{background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.22);color:var(--red);font-family:var(--mono);font-size:9px;padding:5px 12px;border-radius:5px;cursor:pointer}
+.sp-reset-btn:hover{background:rgba(255,77,77,.18)}
+
+/* header stats button */
+.stats-btn{background:var(--adim);border:1px solid rgba(0,232,122,.2);color:var(--accent);font-family:var(--mono);font-size:9px;font-weight:600;padding:4px 11px;border-radius:5px;cursor:pointer;letter-spacing:.06em;text-transform:uppercase}
+.stats-btn:hover{background:rgba(0,232,122,.18)}
+
+/* idle indicator in header */
+.idle-pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:20px;border:1px solid transparent;display:none}
+.idle-pill.active-state{display:block;background:var(--adim);color:var(--accent);border-color:rgba(0,232,122,.2)}
+.idle-pill.idle-state{display:block;background:rgba(245,166,35,.1);color:var(--amber);border-color:rgba(245,166,35,.3);animation:pulse 2s ease-in-out infinite}
+
 /* Toast */
 #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--accent);color:#001a0d;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:8px 16px;border-radius:7px;transition:transform .22s cubic-bezier(.34,1.56,.64,1);pointer-events:none;z-index:999;box-shadow:0 3px 16px var(--aglow)}
 #toast.show{transform:translateX(-50%) translateY(0)}
@@ -233,10 +306,12 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
   <div class="dot"></div>
   <h1>Cold Call Dialer</h1>
   <div class="hright">
+    <div class="idle-pill" id="idle-pill">● Active</div>
     <div class="sync-row">
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-label">not connected</span>
     </div>
+    <button class="stats-btn" onclick="openStats()">📊 Stats</button>
     <div class="user-pill" id="user-pill"></div>
     <button class="btn btn-g" style="font-size:9px;padding:4px 9px" onclick="showSetup()">&#9881;</button>
   </div>
@@ -469,6 +544,82 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
   </div>
 </div>
 
+<!-- ══════════ STATS PANEL ══════════ -->
+<div id="stats-panel">
+  <div class="sp-card">
+    <div class="sp-header">
+      <div class="sp-title">📊 Session Performance</div>
+      <button class="sp-close" onclick="closeStats()">✕ Close</button>
+    </div>
+
+    <!-- Idle warning -->
+    <div class="idle-banner" id="idle-banner">
+      <span class="idle-icon">⏸</span>
+      <span class="idle-text" id="idle-banner-text">No activity detected for 5 minutes</span>
+      <button class="idle-dismiss" onclick="dismissIdleBanner()">Dismiss</button>
+    </div>
+
+    <!-- Top KPIs -->
+    <div class="sp-kpi-row">
+      <div class="sp-kpi">
+        <div class="sp-kpi-val green" id="kpi-calls">0</div>
+        <div class="sp-kpi-label">Calls Tagged</div>
+      </div>
+      <div class="sp-kpi">
+        <div class="sp-kpi-val blue" id="kpi-rate">0/hr</div>
+        <div class="sp-kpi-label">Call Rate</div>
+      </div>
+      <div class="sp-kpi">
+        <div class="sp-kpi-val amber" id="kpi-pickup">0%</div>
+        <div class="sp-kpi-label">Pick-up Rate</div>
+      </div>
+      <div class="sp-kpi">
+        <div class="sp-kpi-val" id="kpi-eta">—</div>
+        <div class="sp-kpi-label">Est. Finish</div>
+      </div>
+    </div>
+
+    <!-- Time breakdown -->
+    <div class="sp-section">
+      <div class="sp-section-title">Time Breakdown</div>
+      <div class="sp-time-row">
+        <div class="sp-time-box">
+          <div class="sp-time-val" id="t-active">0:00</div>
+          <div class="sp-time-label">Active Time</div>
+        </div>
+        <div class="sp-time-box">
+          <div class="sp-time-val" id="t-idle">0:00</div>
+          <div class="sp-time-label">Idle Time</div>
+        </div>
+        <div class="sp-time-box">
+          <div class="sp-time-val" id="t-avg">—</div>
+          <div class="sp-time-label">Avg per Call</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Outcome breakdown -->
+    <div class="sp-section">
+      <div class="sp-section-title">Outcome Breakdown</div>
+      <div class="sp-outcomes" id="sp-outcomes"></div>
+    </div>
+
+    <!-- Activity log -->
+    <div class="sp-section">
+      <div class="sp-section-title">Recent Activity Log</div>
+      <div class="sp-log" id="sp-log"><div style="font-family:var(--mono);font-size:10px;color:var(--t3);padding:8px">No activity yet this session</div></div>
+    </div>
+
+    <div class="sp-footer">
+      <div class="sp-footer-note">
+        Session started: <span id="sp-session-start">—</span><br>
+        Stats reset on page reload · Activity logged to Sheet every call
+      </div>
+      <button class="sp-reset-btn" onclick="resetSession()">Reset Session</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -609,6 +760,11 @@ async function loadTab() {
 }
 
 function autoJumpToFirstEmpty() {
+  // Start/restart performance tracking for this session
+  if (!perf.sessionStart) {
+    perfInit();
+    updateIdlePill(false);
+  }
   const idx = leads.findIndex(l => !l.note || !l.note.trim());
   if (idx !== -1) {
     selectLead(idx); ensureRowVisible(idx);
@@ -868,6 +1024,7 @@ function applyTag(tag) {
   updateNoteReq(tag); highlightTag(tag);
   updateRow(activeIdx); updateStats();
   queueSave(leads[activeIdx]);
+  recordCall(tag, leads[activeIdx].company);
   showToast('Note: ' + tag);
 }
 
@@ -882,6 +1039,7 @@ function addManual() {
   document.querySelectorAll('.ntbtn').forEach(b => b.classList.remove('sel'));
   updateRow(activeIdx); updateStats();
   queueSave(leads[activeIdx]);
+  recordCall(leads[activeIdx].note, leads[activeIdx].company);
 }
 
 // ══════ Checkboxes ══════
@@ -974,6 +1132,247 @@ document.addEventListener('keydown', e => {
   if (e.key==='4') applyTag('NA');
   if (e.key==='5') applyTag('CD');
   if (e.key==='6') applyTag('DNC');
+});
+
+// ══════════════════════════════════════════════
+//  PERFORMANCE TRACKING ENGINE
+// ══════════════════════════════════════════════
+
+const IDLE_THRESHOLD  = 3 * 60 * 1000;  // 3 min → go idle
+const IDLE_WARN       = 5 * 60 * 1000;  // 5 min → show warning
+const ACTIVITY_EVENTS = ['mousedown','keydown','scroll','click'];
+
+const perf = {
+  sessionStart:   null,
+  activeMs:       0,          // accumulated active milliseconds
+  idleMs:         0,          // accumulated idle milliseconds
+  lastActionAt:   null,       // timestamp of last user action
+  lastCallAt:     null,       // timestamp of last note tagged
+  isIdle:         false,
+  idleTimerStart: null,       // when current idle period started
+  activityLog:    [],         // [{ts, tag, company, gapSec}]
+  outcomes:       { 'PK CE':0,'PK NI':0,'VM':0,'NA':0,'CD':0,'DNC':0,'CUSTOM':0 },
+  tickInterval:   null,
+};
+
+function perfInit() {
+  perf.sessionStart = Date.now();
+  perf.lastActionAt = Date.now();
+  document.getElementById('sp-session-start').textContent = new Date().toLocaleTimeString();
+
+  // Track any user activity
+  ACTIVITY_EVENTS.forEach(ev =>
+    document.addEventListener(ev, onActivity, { passive: true })
+  );
+
+  // Tick every second to update timers
+  perf.tickInterval = setInterval(perfTick, 1000);
+}
+
+function onActivity() {
+  const now = Date.now();
+
+  if (perf.isIdle) {
+    // Coming back from idle — accumulate idle time
+    perf.idleMs += now - perf.idleTimerStart;
+    perf.isIdle  = false;
+    perf.idleTimerStart = null;
+    updateIdlePill(false);
+  }
+
+  perf.lastActionAt = now;
+}
+
+function perfTick() {
+  if (!perf.sessionStart) return;
+  const now = Date.now();
+  const sinceAction = now - perf.lastActionAt;
+
+  // Transition to idle
+  if (!perf.isIdle && sinceAction >= IDLE_THRESHOLD) {
+    perf.isIdle = true;
+    perf.idleTimerStart = perf.lastActionAt + IDLE_THRESHOLD;
+    updateIdlePill(true);
+  }
+
+  // Show warning banner after IDLE_WARN
+  if (perf.isIdle && sinceAction >= IDLE_WARN) {
+    const idleMin = Math.floor(sinceAction / 60000);
+    document.getElementById('idle-banner-text').textContent =
+      `No activity for ${idleMin} minute${idleMin > 1 ? 's' : ''} — are you still there?`;
+    document.getElementById('idle-banner').classList.add('vis');
+  }
+
+  // Recalculate active time = total elapsed − idle
+  const totalElapsed = now - perf.sessionStart;
+  const currentIdleMs = perf.isIdle ? (now - perf.idleTimerStart) : 0;
+  perf.activeMs = totalElapsed - perf.idleMs - currentIdleMs;
+  perf.idleMs_total = perf.idleMs + currentIdleMs; // for display
+}
+
+function updateIdlePill(idle) {
+  const pill = document.getElementById('idle-pill');
+  if (idle) {
+    pill.textContent = '⏸ Idle';
+    pill.className = 'idle-pill idle-state';
+  } else {
+    pill.textContent = '● Active';
+    pill.className = 'idle-pill active-state';
+  }
+}
+
+function recordCall(tag, company) {
+  onActivity(); // calling = activity
+  const now = Date.now();
+  const gapSec = perf.lastCallAt ? Math.round((now - perf.lastCallAt) / 1000) : null;
+  perf.lastCallAt = now;
+
+  // Outcomes
+  const key = ['PK CE','PK NI','VM','NA','CD','DNC'].includes(tag) ? tag : 'CUSTOM';
+  perf.outcomes[key] = (perf.outcomes[key] || 0) + 1;
+
+  // Activity log (keep last 50)
+  perf.activityLog.unshift({ ts: now, tag, company, gapSec });
+  if (perf.activityLog.length > 50) perf.activityLog.pop();
+
+  // Push to sheet asynchronously (fire and forget)
+  logActivityToSheet(tag, company);
+}
+
+function logActivityToSheet(tag, company) {
+  if (!scriptURL || !currentTab || activeIdx === null) return;
+  const lead = leads[activeIdx];
+  callScript(scriptURL, {
+    action:   'logActivity',
+    tab:      currentTab,
+    tag,
+    company:  company || '',
+    rowIndex: lead ? lead.rowIndex : '',
+    note:     lead ? lead.note : '',
+    ts:       new Date().toISOString(),
+  }).catch(() => {}); // silent fail — never interrupts the BDR
+}
+
+// ── Stats panel rendering ──
+function openStats() {
+  perfTick(); // force refresh before opening
+  renderStats();
+  document.getElementById('stats-panel').classList.add('open');
+  // Update every second while open
+  perf._statsRender = setInterval(renderStats, 1000);
+}
+
+function closeStats() {
+  document.getElementById('stats-panel').classList.remove('open');
+  clearInterval(perf._statsRender);
+}
+
+function dismissIdleBanner() {
+  document.getElementById('idle-banner').classList.remove('vis');
+  onActivity();
+}
+
+function renderStats() {
+  const now = Date.now();
+  const totalCalls = Object.values(perf.outcomes).reduce((a,b) => a+b, 0);
+  const activeMs = Math.max(0, perf.activeMs);
+  const idleMs   = Math.max(0, perf.idleMs_total || perf.idleMs);
+  const activeHrs = activeMs / 3600000;
+
+  // KPIs
+  document.getElementById('kpi-calls').textContent = totalCalls;
+
+  const rate = activeHrs > 0.01 ? Math.round(totalCalls / activeHrs) : 0;
+  document.getElementById('kpi-rate').textContent = rate + '/hr';
+
+  const picks = (perf.outcomes['PK CE'] || 0) + (perf.outcomes['PK NI'] || 0);
+  const pickupPct = totalCalls > 0 ? Math.round(picks / totalCalls * 100) : 0;
+  const pickupEl = document.getElementById('kpi-pickup');
+  pickupEl.textContent = pickupPct + '%';
+  pickupEl.className = 'sp-kpi-val ' + (pickupPct >= 20 ? 'green' : pickupPct >= 10 ? 'amber' : 'red');
+
+  // ETA — leads left / rate
+  const leadsLeft = leads.filter(l => !l.note || !l.note.trim()).length;
+  if (rate > 0 && leadsLeft > 0) {
+    const minsLeft = Math.round(leadsLeft / rate * 60);
+    const h = Math.floor(minsLeft / 60), m = minsLeft % 60;
+    document.getElementById('kpi-eta').textContent = h > 0 ? `${h}h ${m}m` : `${m}m`;
+  } else {
+    document.getElementById('kpi-eta').textContent = leadsLeft === 0 ? 'Done!' : '—';
+  }
+
+  // Time
+  document.getElementById('t-active').textContent = fmtMs(activeMs);
+  document.getElementById('t-idle').textContent   = fmtMs(idleMs);
+  const avgMs = totalCalls > 0 ? activeMs / totalCalls : 0;
+  document.getElementById('t-avg').textContent = totalCalls > 0 ? fmtMs(avgMs) : '—';
+
+  // Outcomes bars
+  const outcomeConfig = [
+    { key:'PK CE', label:'PK CE', color:'var(--amber)' },
+    { key:'PK NI', label:'PK NI', color:'var(--red)' },
+    { key:'VM',    label:'VM',    color:'var(--blue)' },
+    { key:'NA',    label:'NA',    color:'var(--t3)' },
+    { key:'CD',    label:'CD',    color:'var(--pink)' },
+    { key:'DNC',   label:'DNC',   color:'var(--purple)' },
+    { key:'CUSTOM',label:'NOTE',  color:'var(--accent)' },
+  ];
+  const maxOutcome = Math.max(1, ...outcomeConfig.map(o => perf.outcomes[o.key] || 0));
+  const outHtml = outcomeConfig.map(o => {
+    const count = perf.outcomes[o.key] || 0;
+    const pct   = totalCalls > 0 ? Math.round(count / totalCalls * 100) : 0;
+    const barW  = Math.round(count / maxOutcome * 100);
+    return `<div class="sp-outcome-row">
+      <span class="sp-outcome-label" style="color:${o.color}">${o.label}</span>
+      <div class="sp-outcome-bar-wrap"><div class="sp-outcome-bar" style="width:${barW}%;background:${o.color}"></div></div>
+      <span class="sp-outcome-count">${count}</span>
+      <span class="sp-outcome-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+  document.getElementById('sp-outcomes').innerHTML = outHtml;
+
+  // Activity log
+  if (perf.activityLog.length === 0) return;
+  const logHtml = perf.activityLog.map(entry => {
+    const ci = chipInfo(entry.tag);
+    const timeStr = new Date(entry.ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const gapStr  = entry.gapSec !== null
+      ? (entry.gapSec < 60 ? `${entry.gapSec}s` : `${Math.floor(entry.gapSec/60)}m${entry.gapSec%60}s`)
+      : '—';
+    return `<div class="sp-log-row">
+      <span class="sp-log-time">${timeStr}</span>
+      <span class="sp-log-tag chip ${ci.cls}">${entry.tag}</span>
+      <span class="sp-log-co">${esc(entry.company)}</span>
+      <span class="sp-log-gap" title="Time since last call">${gapStr}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('sp-log').innerHTML = logHtml;
+}
+
+function fmtMs(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const h = Math.floor(m / 60);
+  if (h > 0) return `${h}:${String(m%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  return `${m}:${String(s%60).padStart(2,'0')}`;
+}
+
+function resetSession() {
+  perf.activeMs = 0; perf.idleMs = 0; perf.idleMs_total = 0;
+  perf.sessionStart = Date.now(); perf.lastActionAt = Date.now();
+  perf.lastCallAt = null; perf.isIdle = false;
+  perf.activityLog = [];
+  perf.outcomes = { 'PK CE':0,'PK NI':0,'VM':0,'NA':0,'CD':0,'DNC':0,'CUSTOM':0 };
+  document.getElementById('sp-session-start').textContent = new Date().toLocaleTimeString();
+  document.getElementById('idle-banner').classList.remove('vis');
+  updateIdlePill(false);
+  renderStats();
+  showToast('Session reset');
+}
+
+// Close on backdrop click
+document.getElementById('stats-panel').addEventListener('click', e => {
+  if (e.target === document.getElementById('stats-panel')) closeStats();
 });
 
 init();
