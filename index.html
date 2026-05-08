@@ -88,11 +88,16 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
 .tz-left{display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap;padding:5px 0}
 .tz-zone-group{display:flex;align-items:center;gap:4px;padding:0 10px 0 0;border-right:1px solid var(--border);margin-right:10px}
 .tz-zone-group:last-of-type{border-right:none;margin-right:0}
-.tz-zone-label{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:3px;white-space:nowrap;margin-right:3px}
+.tz-zone-label{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:3px;white-space:nowrap;margin-right:3px;cursor:pointer;user-select:none;border:1px solid transparent;transition:filter .15s}
+.tz-zone-label:hover{filter:brightness(1.3);border-color:currentColor}
 .tz-zone-label.et{color:#4da6ff;background:rgba(77,166,255,.1)}
 .tz-zone-label.ct{color:#f5a623;background:rgba(245,166,35,.1)}
 .tz-zone-label.mt{color:#b388ff;background:rgba(179,136,255,.1)}
 .tz-zone-label.pt{color:#ff5ecf;background:rgba(255,94,207,.1)}
+.tz-zone-label.group-sel.et{background:rgba(77,166,255,.28);border-color:#4da6ff}
+.tz-zone-label.group-sel.ct{background:rgba(245,166,35,.28);border-color:#f5a623}
+.tz-zone-label.group-sel.mt{background:rgba(179,136,255,.28);border-color:#b388ff}
+.tz-zone-label.group-sel.pt{background:rgba(255,94,207,.28);border-color:#ff5ecf}
 .tz-state-btn{font-family:var(--mono);font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--t3);cursor:pointer;white-space:nowrap}
 .tz-state-btn:hover{border-color:var(--text);color:var(--text)}
 .tz-state-btn.sel{color:#001a0d;border-color:transparent}
@@ -375,7 +380,7 @@ header h1{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:
     </div>
     <div class="tz-right">
       <div class="pk-time-display" id="pk-time">🇵🇰 <span id="pk-clock">--:--</span></div>
-      <button class="smart-btn" onclick="applySmartFilter()">⚡ Smart Filter</button>
+      <button class="smart-btn" onclick="applySmartFilter()" title="Clear all selections — start fresh, then click a state or region">⚡ Smart Filter</button>
       <button class="filter-clear-btn" onclick="clearFilter()">Clear</button>
       <div class="filter-count" id="filter-count"></div>
     </div>
@@ -639,9 +644,11 @@ function buildTzBar() {
     group.className = 'tz-zone-group';
 
     const label = document.createElement('span');
-    label.className = `tz-zone-label ${zv.cls} ${callable ? 'callable' : 'not-callable'}`;
-    label.title = `${zk}: ${timeStr} local`;
+    const allSel = zv.states.every(s => selectedStates.has(s));
+    label.className = `tz-zone-label ${zv.cls} ${callable ? 'callable' : 'not-callable'}${allSel ? ' group-sel' : ''}`;
+    label.title = `Click to toggle all ${zk} states`;
     label.textContent = `${zk} ${timeStr}`;
+    label.onclick = () => toggleZoneFilter(zk);
     group.appendChild(label);
 
     zv.states.forEach(st => {
@@ -673,19 +680,29 @@ function toggleStateFilter(state, cls, btn) {
   applyFilter();
 }
 
-function applySmartFilter() {
-  const now = new Date();
-  selectedStates.clear();
-  // Select all states where it's currently callable (8am-6pm local)
-  for (const [zk, zv] of Object.entries(TZ_ZONES)) {
-    zv.states.forEach(st => {
-      if (isStateCallable(st, now)) selectedStates.add(st);
-    });
+function toggleZoneFilter(zoneKey) {
+  const zv = TZ_ZONES[zoneKey];
+  if (!zv) return;
+  const allSel = zv.states.every(s => selectedStates.has(s));
+  if (allSel) {
+    // Deselect all in zone
+    zv.states.forEach(s => selectedStates.delete(s));
+  } else {
+    // Select all in zone
+    zv.states.forEach(s => selectedStates.add(s));
   }
-  // Rebuild buttons to reflect new selection
   buildTzBar();
   applyFilter();
-  showToast(`Smart Filter: ${selectedStates.size} states callable right now`);
+  const action = allSel ? 'cleared' : 'selected';
+  showToast(`${zoneKey}: ${zv.states.length} states ${action}`);
+}
+
+function applySmartFilter() {
+  // Clear everything — blank slate so user can pick states manually
+  selectedStates.clear();
+  buildTzBar();
+  applyFilter();
+  showToast('Smart Filter: pick a state or region to dial');
 }
 
 function clearFilter() {
